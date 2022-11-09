@@ -163,6 +163,12 @@ namespace QuizHouse.Services
                     game.CurrentVoteCategories.TryAdd(category.Id, 0);
             }
 
+            if (game.CurrentVoteCategories.IsEmpty)
+            {
+                foreach (var category in (await _quizService.GetRandomCategoriesWithQuestionCountAsync(game.CategoryPerSelectionCount, new HashSet<string>(), 200)))
+                    game.CurrentVoteCategories.TryAdd(category.Id, 0);
+            }
+
             game.CategoryVoteTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             game.GameState = QuizGameState.CategorySelection;
 
