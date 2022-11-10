@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuizHouse.ActionFilters;
+using QuizHouse.Interfaces;
 using QuizHouse.Services;
 using System;
 using System.Collections.Generic;
@@ -30,10 +31,10 @@ namespace QuizHouse.Controllers
     [TypeFilter(typeof(LoginActionFilter))]
     public class LoginController : Controller
     {
-        private AccountRepositoryService _accountRepositoryService;
-        public LoginController(AccountRepositoryService accountRepositoryService)
+        private IAccountRepository _accountRepository;
+        public LoginController(IAccountRepository accountRepository)
         {
-            _accountRepositoryService = accountRepositoryService;
+            _accountRepository = accountRepository;
         }
 
         public IActionResult Index()
@@ -47,16 +48,18 @@ namespace QuizHouse.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RegisterAccount(RegisterAccountParametrs model)
+        public async Task<IActionResult> RegisterAccount([FromBody] RegisterAccountParametrs model)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid)                
                 return Json(new { error = "invalid_model" });
 
-            var accountExists = await _accountRepositoryService.AccountExists(model.Email, model.Username);
+            var accountExists = await _accountRepository.AccountExists(model.Email, model.Username);
             if (accountExists)
                 return Json(new { error = "account_exists" });
 
-            return Json(new { error = "not_implemented" });
+            await _accountRepository.CreateAccount(model.Email, model.Username, model.Password);
+
+            return Json(new { success = "account_created" });
         }
     }
 }
