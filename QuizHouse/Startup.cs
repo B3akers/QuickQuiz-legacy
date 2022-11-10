@@ -39,6 +39,7 @@ namespace QuizHouse
             services.AddSingleton<WebSocketHandler>();
             services.AddSingleton<GamesService>();
             services.AddSingleton<JwtTokensService>();
+            services.AddSingleton<IEmailProvider, EmailProviderService>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddSingleton<IAccountRepository, AccountRepositoryService>();
             services.AddSingleton<IUserAuthentication, UserAuthenticationService>();

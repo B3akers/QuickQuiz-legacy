@@ -32,9 +32,11 @@ namespace QuizHouse.Controllers
     public class LoginController : Controller
     {
         private IAccountRepository _accountRepository;
-        public LoginController(IAccountRepository accountRepository)
+        private IEmailProvider _emailProvider;
+        public LoginController(IAccountRepository accountRepository, IEmailProvider emailProvider)
         {
             _accountRepository = accountRepository;
+            _emailProvider = emailProvider;
         }
 
         public IActionResult Index()
@@ -50,16 +52,21 @@ namespace QuizHouse.Controllers
         [HttpPost]
         public async Task<IActionResult> RegisterAccount([FromBody] RegisterAccountParametrs model)
         {
-            if (!ModelState.IsValid)                
-                return Json(new { error = "invalid_model" });
+            return Json(new { error = "not_supported" });
 
-            var accountExists = await _accountRepository.AccountExists(model.Email, model.Username);
-            if (accountExists)
-                return Json(new { error = "account_exists" });
-
-            await _accountRepository.CreateAccount(model.Email, model.Username, model.Password);
-
-            return Json(new { success = "account_created" });
+           // if (!ModelState.IsValid)                
+           //     return Json(new { error = "invalid_model" });
+           //
+           // var accountExists = await _accountRepository.AccountExists(model.Email, model.Username);
+           // if (accountExists)
+           //     return Json(new { error = "account_exists" });
+           //
+           // await _accountRepository.CreateAccount(model.Email, model.Username, model.Password);
+           //
+           // //Send email with confirmation
+           // //
+           //
+           // return Json(new { success = "account_created" });
         }
     }
 }
