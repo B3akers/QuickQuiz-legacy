@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Dto
 {
-    public class Question
+    public class QuestionDTO
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

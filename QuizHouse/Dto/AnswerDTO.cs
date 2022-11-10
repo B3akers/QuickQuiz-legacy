@@ -7,14 +7,11 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Dto
 {
-    public class Category
+    public class AnswerDTO
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-        public string Label { get; set; }
-        public string Color { get; set; }
-        public string Icon { get; set; }
-        public int QuestionCount { get; set; }
+        public string Text { get; set; }
     }
 }

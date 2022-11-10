@@ -21,7 +21,7 @@
                 <button type="submit" data-buttontype="createGame" class="btn btn-primary mt-2">Stwórz gre</button>
             </div>
             <div id="twitchAuth" class="form-group">
-                <a href="https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=@Configuration["Twitch:ClientId"]&redirect_uri=@Url.Action("TwitchLogin", "Home", null, @Context.Request.Scheme)&scope="> <button type="button" class="btn btn-primary mt-2">Zaloguj się przez twitch.tv</button></a>
+                <a href="https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=@Configuration["Twitch:ClientId"]&redirect_uri=@Url.Action("TwitchLogin", "Home")&scope="> <button type="button" class="btn btn-primary mt-2">Zaloguj się przez twitch.tv</button></a>
             </div>
         </form>
     </div>
@@ -198,9 +198,9 @@
 @section Scripts {
     <script>
         const websocketGameUrl = '@Url.Action("Get", "WebSockets", null, @Context.Request.Scheme == "https" ? "wss" : "ws")';
-        const createGameUrl = '@Url.Action("CreateGame", "Home", null, @Context.Request.Scheme)';
-        const joinGameUrl = '@Url.Action("JoinGame", "Home", null, @Context.Request.Scheme)';
-        const getCategoriesUrl = '@Url.Action("GetCategories", "Home", null, @Context.Request.Scheme)';
+        const createGameUrl = '@Url.Action("CreateGame", "Home")';
+        const joinGameUrl = '@Url.Action("JoinGame", "Home")';
+        const getCategoriesUrl = '@Url.Action("GetCategories", "Home")';
         const rootUrl = '@Url.Content("~")';
     </script>
 

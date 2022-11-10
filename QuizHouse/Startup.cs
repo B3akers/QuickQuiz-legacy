@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using QuizHouse.Interfaces;
 using QuizHouse.Services;
 using QuizHouse.WebSockets;
 using System;
@@ -24,6 +25,12 @@ namespace QuizHouse
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSession(options =>
+            {
+                options.Cookie.Name = "session";
+                options.IdleTimeout = TimeSpan.FromHours(1);
+            });
+
             services.AddControllersWithViews();
             services.AddResponseCaching();
 
@@ -32,7 +39,11 @@ namespace QuizHouse
             services.AddSingleton<WebSocketHandler>();
             services.AddSingleton<GamesService>();
             services.AddSingleton<JwtTokensService>();
+            services.AddSingleton<IAccountRepository, AccountRepositoryService>();
+            services.AddSingleton<IUserAuthentication, UserAuthenticationService>();
+            services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddHostedService<GamesTickService>();
+            services.AddHostedService<ConfigureMongoDbIndexesService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,6 +58,8 @@ namespace QuizHouse
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseResponseCaching();
+
+            app.UseSession();
 
             app.UseStaticFiles();
 

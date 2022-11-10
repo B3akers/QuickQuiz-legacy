@@ -61,8 +61,8 @@ namespace QuizHouse.Services
         public HashSet<string> AcknowledgedCategories { get; set; }
         public HashSet<string> AcknowledgedQuestions { get; set; }
         public ConcurrentDictionary<string, QuizGamePlayer> CurrentPlayers { get; set; }
-        public List<Dto.Question> CurrentQuestions { get; set; }
-        public List<Dto.Answer> CurrentQuestionsAnswers { get; set; }
+        public List<Dto.QuestionDTO> CurrentQuestions { get; set; }
+        public List<Dto.AnswerDTO> CurrentQuestionsAnswers { get; set; }
         public int CurrentQuestionIndex { get; set; }
         public int MaxCategoriesCount { get; set; }
         public int QuestionsPerCategoryCount { get; set; }
@@ -114,7 +114,7 @@ namespace QuizHouse.Services
                 AcknowledgedCategories = new HashSet<string>(),
                 AcknowledgedQuestions = new HashSet<string>(),
                 CurrentVoteCategories = new ConcurrentDictionary<string, int>(),
-                CurrentQuestionsAnswers = new List<Dto.Answer>(),
+                CurrentQuestionsAnswers = new List<Dto.AnswerDTO>(),
                 MaxCategoriesCount = 7,
                 QuestionsPerCategoryCount = 6,
                 TimeSecondForQuestion = 15,

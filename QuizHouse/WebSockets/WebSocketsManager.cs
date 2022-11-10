@@ -106,12 +106,12 @@ namespace QuizHouse.WebSockets
             return false;
         }
 
-        public async Task DisconnectPlayer(string gameId, string userName)
+        public async Task KickPlayer(string gameId, string userName)
         {
             if (_gameSockets.TryGetValue(gameId, out var playersSockets))
                 if (playersSockets.TryGetValue(userName, out var playerSocket))
-                    await playerSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure,
-                               string.Empty,
+                    await playerSocket.CloseOutputAsync((WebSocketCloseStatus)3300,
+                               "Kicked",
                                CancellationToken.None);
 
         }
@@ -273,7 +273,7 @@ namespace QuizHouse.WebSockets
                         quizKickPlayer.Disconnected = true;
                         quizKickPlayer.LastPingTime = 0;
 
-                        await _webSocketConnectionManager.DisconnectPlayer(socketPlayerConnection.GameId, kickPacket.PlayerName);
+                        await _webSocketConnectionManager.KickPlayer(socketPlayerConnection.GameId, kickPacket.PlayerName);
                     }
                     else if (packet.Type == "question_answer")
                     {

@@ -159,11 +159,11 @@ namespace QuizHouse.Controllers
                 }),
                 DateTime.UtcNow.AddDays(30));
 
-                return new RedirectResult(Url.Action("Index", "Home", new { username_token = twitchUsernameToken }, Request.Scheme), false);
+                return new RedirectResult(Url.Action("Index", "Home", new { username_token = twitchUsernameToken }), false);
             }
             catch
             {
-                return new RedirectResult(Url.Action("Index", "Home", null, Request.Scheme), false);
+                return new RedirectResult(Url.Action("Index", "Home"), false);
             }
         }
 
