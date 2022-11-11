@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Controllers
 {
-    [AdminActionFilter]
+    [TypeFilter(typeof(AdminActionFilter))]
     public class AdminController : Controller
     {
         public IActionResult Index()

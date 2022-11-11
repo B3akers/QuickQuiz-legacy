@@ -14,8 +14,9 @@ namespace QuizHouse.Dto
 
     public sealed class TwitchConnection : AccountConnection
     {
-        public string Username { get; set; }
-        public string Token { get; set; }
+        public string Login { get; set; }
+        public string Displayname { get; set; }
+
     }
 
     public class AccountDTO
@@ -26,6 +27,8 @@ namespace QuizHouse.Dto
         public string Username { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
+        public bool EmailConfirmed { get; set; }
+        public bool IsAdmin { get; set; }
         public List<AccountConnection> Connections { get; set; }
     }
 }

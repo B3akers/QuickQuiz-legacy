@@ -78,7 +78,7 @@ namespace QuizHouse
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}");
+                    pattern: "{controller=Login}/{action=Index}");
             });
         }
     }

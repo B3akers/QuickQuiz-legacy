@@ -20,7 +20,7 @@ namespace QuizHouse.Services
             _smtpClient.EnableSsl = bool.Parse(configuration["Email:UseSsl"]);
             _smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
 
-            _fromAddress = new MailAddress(configuration["Email:EmailAddress"]);
+            _fromAddress = new MailAddress(configuration["Email:EmailAddress"], configuration["Email:DisplayName"]);
         }
 
         public void SendEmail(string to, string subject, string content)

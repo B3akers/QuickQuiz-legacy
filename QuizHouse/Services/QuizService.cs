@@ -16,6 +16,7 @@ namespace QuizHouse.Services
         private readonly IMongoCollection<QuestionDTO> _questionsCollection;
         private readonly IMongoCollection<DeviceDTO> _devicesCollection;
         private readonly IMongoCollection<AccountDTO> _accountsCollection;
+        private readonly IMongoCollection<EmailConfirmationDTO> _emailConfirmationsCollection;
 
         private MongoClient _client;
 
@@ -29,12 +30,17 @@ namespace QuizHouse.Services
             _questionsCollection = mongoDatabase.GetCollection<QuestionDTO>("questions");
             _devicesCollection = mongoDatabase.GetCollection<DeviceDTO>("devices");
             _accountsCollection = mongoDatabase.GetCollection<AccountDTO>("accounts");
-
+            _emailConfirmationsCollection = mongoDatabase.GetCollection<EmailConfirmationDTO>("email_confirmations");
         }
 
         public MongoClient GetMongoClient()
         {
             return _client;
+        }
+
+        public IMongoCollection<EmailConfirmationDTO> EmailConfirmationsCollection()
+        {
+            return _emailConfirmationsCollection;
         }
 
         public IMongoCollection<CategoryDTO> GetCategoryCollection()
