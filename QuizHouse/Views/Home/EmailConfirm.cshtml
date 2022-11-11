@@ -13,3 +13,11 @@
         <a href="@Url.Action("Logout", "Home")" class="btn btn-primary mt-2" role="button">Wyloguj</a>
     </div>
 </div>
+
+@section Scripts {
+		<script>
+			const resendEmailUrl = '@Url.Action("ResendEmail", "Home")';
+		</script>
+		<script src="~/js/common.js"></script>
+		<script src="~/js/email.js"></script>
+}

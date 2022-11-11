@@ -9,26 +9,42 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Controllers
 {
-    [TypeFilter(typeof(HomeActionFilter))]
-    public class HomeController : Controller
-    {
-        IUserAuthentication _userAuthentication;
-        public HomeController(IUserAuthentication userAuthentication) 
-        {
-            _userAuthentication = userAuthentication;
-        }
+	[TypeFilter(typeof(HomeActionFilter))]
+	public class HomeController : Controller
+	{
+		IUserAuthentication _userAuthentication;
+		IAccountRepository _accountRepository;
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+		public HomeController(IUserAuthentication userAuthentication, IAccountRepository accountRepository)
+		{
+			_userAuthentication = userAuthentication;
+			_accountRepository = accountRepository;
+		}
 
-        [HttpGet]
-        public async Task<IActionResult> Logout()
-        {
-            await _userAuthentication.LogoutUser(HttpContext);
+		public IActionResult Index()
+		{
+			return View();
+		}
 
-            return new RedirectResult(Url.Action("Index", "Login"), false);
-        }
-    }
+		[HttpGet]
+		public async Task<IActionResult> Logout()
+		{
+			await _userAuthentication.LogoutUser(HttpContext);
+
+			return new RedirectResult(Url.Action("Index", "Login"), false);
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> ResendEmail()
+		{
+			var account = HttpContext.Items["userAccount"] as AccountDTO;
+
+			if (account.EmailConfirmed)
+				return Json(new { error = "already_confirmed" });
+
+			await _accountRepository.SendConfirmationEmail(account, Url);
+
+			return Json(new { success = "email_sended" });
+		}
+	}
 }
