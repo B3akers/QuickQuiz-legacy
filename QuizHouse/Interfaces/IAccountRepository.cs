@@ -22,6 +22,7 @@ namespace QuizHouse.Interfaces
         public Task<(EmailConfirmationStatus, string)> TryConfirmEmail(string key);
         public Task<AccountDTO> GetAccount(string accountId);
         public Task<AccountDTO> GetAccountByEmail(string email);
+		public Task UpdateLastEmailConfirmSend(AccountDTO account, long time);
 
-    }
+	}
 }

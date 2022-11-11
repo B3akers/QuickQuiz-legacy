@@ -34,10 +34,11 @@ namespace QuizHouse.Services
             var accounts = mongoDatabase.GetCollection<Dto.AccountDTO>("accounts");
             await accounts.Indexes.CreateOneAsync(new CreateIndexModel<Dto.AccountDTO>(Builders<Dto.AccountDTO>.IndexKeys.Ascending(x => x.Email), new CreateIndexOptions() { Unique = true, Collation = new Collation("en", strength: CollationStrength.Secondary) }));
             await accounts.Indexes.CreateOneAsync(new CreateIndexModel<Dto.AccountDTO>(Builders<Dto.AccountDTO>.IndexKeys.Ascending(x => x.Username), new CreateIndexOptions() { Collation = new Collation("en", strength: CollationStrength.Secondary) }));
+			await accounts.Indexes.CreateOneAsync(new CreateIndexModel<Dto.AccountDTO>(Builders<Dto.AccountDTO>.IndexKeys.Ascending(x => x.CreationTime)));
+			await accounts.Indexes.CreateOneAsync(new CreateIndexModel<Dto.AccountDTO>(Builders<Dto.AccountDTO>.IndexKeys.Ascending(x => x.EmailConfirmed)));
 
-            var email_confirmations = mongoDatabase.GetCollection<Dto.EmailConfirmationDTO>("email_confirmations");
+			var email_confirmations = mongoDatabase.GetCollection<Dto.EmailConfirmationDTO>("email_confirmations");
             await email_confirmations.Indexes.CreateOneAsync(new CreateIndexModel<Dto.EmailConfirmationDTO>(Builders<Dto.EmailConfirmationDTO>.IndexKeys.Ascending(x => x.Key), new CreateIndexOptions() { Unique = true }));
-            await email_confirmations.Indexes.CreateOneAsync(new CreateIndexModel<Dto.EmailConfirmationDTO>(Builders<Dto.EmailConfirmationDTO>.IndexKeys.Ascending(x => x.AccountId), new CreateIndexOptions() { Unique = true }));
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

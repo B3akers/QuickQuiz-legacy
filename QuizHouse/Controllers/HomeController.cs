@@ -42,6 +42,12 @@ namespace QuizHouse.Controllers
 			if (account.EmailConfirmed)
 				return Json(new { error = "already_confirmed" });
 
+			var currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+			if (currentTime - account.LastEmailConfirmSend < 900)
+				return Json(new { error = "email_too_fast" });
+
+			await _accountRepository.UpdateLastEmailConfirmSend(account, currentTime);
 			await _accountRepository.SendConfirmationEmail(account, Url);
 
 			return Json(new { success = "email_sended" });

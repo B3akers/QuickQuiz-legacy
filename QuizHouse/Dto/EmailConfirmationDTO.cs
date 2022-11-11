@@ -16,11 +16,8 @@ namespace QuizHouse.Dto
         [BsonRepresentation(BsonType.ObjectId)]
         public string AccountId { get; set; }
         public string Email { get; set; }
-
         public string Key { get; set; }
-
+        public long CreationTime { get; set; }
         public bool Used { get; set; }
-
-        public long LastSend { get; set; }
     }
 }
