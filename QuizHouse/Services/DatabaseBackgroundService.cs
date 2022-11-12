@@ -20,12 +20,14 @@ namespace QuizHouse.Services
 		{
 			var accounts = _quizService.GetAccountsCollection();
 			var emailConfirmations = _quizService.EmailConfirmationsCollection();
+			var passwordResets = _quizService.PasswordResetsCollection();
 
 			while (!stoppingToken.IsCancellationRequested)
 			{
 				var currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 				await accounts.DeleteManyAsync(x => !x.EmailConfirmed && x.CreationTime <= currentTime - (3600 * 24 * 2));
 				await emailConfirmations.DeleteManyAsync(x => x.CreationTime <= currentTime - (3600 * 24));
+				await passwordResets.DeleteManyAsync(x => x.CreationTime <= currentTime - 3600);
 				await Task.Delay(1000 * 3600, stoppingToken);
 			}
 		}

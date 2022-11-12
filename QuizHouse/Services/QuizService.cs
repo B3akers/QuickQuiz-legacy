@@ -17,8 +17,9 @@ namespace QuizHouse.Services
         private readonly IMongoCollection<DeviceDTO> _devicesCollection;
         private readonly IMongoCollection<AccountDTO> _accountsCollection;
         private readonly IMongoCollection<EmailConfirmationDTO> _emailConfirmationsCollection;
+		private readonly IMongoCollection<PasswordResetDTO> _passwordResetsCollection;
 
-        private MongoClient _client;
+		private MongoClient _client;
 
         public QuizService(IConfiguration configuration)
         {
@@ -31,14 +32,20 @@ namespace QuizHouse.Services
             _devicesCollection = mongoDatabase.GetCollection<DeviceDTO>("devices");
             _accountsCollection = mongoDatabase.GetCollection<AccountDTO>("accounts");
             _emailConfirmationsCollection = mongoDatabase.GetCollection<EmailConfirmationDTO>("email_confirmations");
-        }
+			_passwordResetsCollection = mongoDatabase.GetCollection<PasswordResetDTO>("password_resets");
+		}
 
-        public MongoClient GetMongoClient()
+		public MongoClient GetMongoClient()
         {
             return _client;
         }
 
-        public IMongoCollection<EmailConfirmationDTO> EmailConfirmationsCollection()
+		public IMongoCollection<PasswordResetDTO> PasswordResetsCollection()
+		{
+			return _passwordResetsCollection;
+		}
+
+		public IMongoCollection<EmailConfirmationDTO> EmailConfirmationsCollection()
         {
             return _emailConfirmationsCollection;
         }

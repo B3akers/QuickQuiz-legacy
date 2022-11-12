@@ -39,8 +39,11 @@ namespace QuizHouse.Services
 
 			var email_confirmations = mongoDatabase.GetCollection<Dto.EmailConfirmationDTO>("email_confirmations");
             await email_confirmations.Indexes.CreateOneAsync(new CreateIndexModel<Dto.EmailConfirmationDTO>(Builders<Dto.EmailConfirmationDTO>.IndexKeys.Ascending(x => x.Key), new CreateIndexOptions() { Unique = true }));
-        }
 
-        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+			var password_resets = mongoDatabase.GetCollection<Dto.PasswordResetDTO>("password_resets");
+			await password_resets.Indexes.CreateOneAsync(new CreateIndexModel<Dto.PasswordResetDTO>(Builders<Dto.PasswordResetDTO>.IndexKeys.Ascending(x => x.Key), new CreateIndexOptions() { Unique = true }));
+		}
+
+		public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }

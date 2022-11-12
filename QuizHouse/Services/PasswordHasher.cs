@@ -8,43 +8,46 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Services
 {
-    public class PasswordHasher : IPasswordHasher
-    {
-        public bool Check(string hash, string password)
-        {
-            byte[] salt = new byte[128 / 8];
+	public class PasswordHasher : IPasswordHasher
+	{
+		public bool Check(string hash, string password)
+		{
+			if (string.IsNullOrEmpty(hash))
+				return false;
 
-            byte[] decodedHashedPassword = Convert.FromBase64String(hash);
-            Buffer.BlockCopy(decodedHashedPassword, 0, salt, 0, salt.Length);
+			byte[] salt = new byte[128 / 8];
 
-            byte[] expectedSubkey = new byte[256 / 8];
-            Buffer.BlockCopy(decodedHashedPassword, salt.Length, expectedSubkey, 0, expectedSubkey.Length);
+			byte[] decodedHashedPassword = Convert.FromBase64String(hash);
+			Buffer.BlockCopy(decodedHashedPassword, 0, salt, 0, salt.Length);
 
-            byte[] actualSubkey = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 1000, 256 / 8);
+			byte[] expectedSubkey = new byte[256 / 8];
+			Buffer.BlockCopy(decodedHashedPassword, salt.Length, expectedSubkey, 0, expectedSubkey.Length);
 
-            return CryptographicOperations.FixedTimeEquals(actualSubkey, expectedSubkey);
-        }
+			byte[] actualSubkey = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 1000, 256 / 8);
 
-        public string Hash(string password)
-        {
-            byte[] salt = new byte[128 / 8];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(salt);
-            }
+			return CryptographicOperations.FixedTimeEquals(actualSubkey, expectedSubkey);
+		}
 
-            byte[] subkey = KeyDerivation.Pbkdf2(
-            password: password,
-            salt: salt,
-            prf: KeyDerivationPrf.HMACSHA1,
-            iterationCount: 1000,
-            numBytesRequested: 256 / 8);
+		public string Hash(string password)
+		{
+			byte[] salt = new byte[128 / 8];
+			using (var rng = RandomNumberGenerator.Create())
+			{
+				rng.GetBytes(salt);
+			}
 
-            byte[] finalPassword = new byte[salt.Length + subkey.Length];
-            Buffer.BlockCopy(salt, 0, finalPassword, 0, salt.Length);
-            Buffer.BlockCopy(subkey, 0, finalPassword, salt.Length, subkey.Length);
+			byte[] subkey = KeyDerivation.Pbkdf2(
+			password: password,
+			salt: salt,
+			prf: KeyDerivationPrf.HMACSHA1,
+			iterationCount: 1000,
+			numBytesRequested: 256 / 8);
 
-            return Convert.ToBase64String(finalPassword);
-        }
-    }
+			byte[] finalPassword = new byte[salt.Length + subkey.Length];
+			Buffer.BlockCopy(salt, 0, finalPassword, 0, salt.Length);
+			Buffer.BlockCopy(subkey, 0, finalPassword, salt.Length, subkey.Length);
+
+			return Convert.ToBase64String(finalPassword);
+		}
+	}
 }

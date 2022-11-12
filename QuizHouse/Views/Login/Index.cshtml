@@ -1,37 +1,41 @@
 ﻿@{
 	ViewData["Title"] = "Zaloguj się";
 }
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 
 <div class="container page-container">
 	<form class="needs-validation p-2" novalidate>
-		<div class="form-group">
+		<div class="mb-1">
 			<label for="userEmail">Email</label>
 			<input type="email" class="form-control" id="userEmail" required>
 		</div>
-		<div class="form-group">
+		<div class="mb-1">
 			<label for="userPassword">Hasło</label>
 			<input type="password" class="form-control" id="userPassword" minlength="6" maxlength="64" required>
 		</div>
 		<div class="form-check">
 			<input type="checkbox" class="form-check-input" id="rememberMe">
 			<label for="rememberMe" class="form-check-label text-white">Zapamiętaj mnie</label>
+			<span class="float-end ms-5"><a href="#" onclick="resetPassword()">Nie pamiętam hasła</a></span>
 		</div>
-		<div class="form-group">
+		<div class="mb-1">
 			<button type="submit" data-buttontype="login" class="btn btn-primary mt-2">Zaloguj się</button>
 		</div>
-		<div class="form-group">
-			<button type="button" class="btn btn-primary mt-2">
+		<div class="mb-1">
+			<a href="https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=@Configuration["Twitch:ClientId"]&redirect_uri=@Url.Action("TwitchLogin", "Login", null, Context.Request.Scheme)&scope=user%3Aread%3Aemail" role="button" class="btn btn-primary mt-2">
 				<i height="18" width="18" class="d-inline-block" style="height: 18px; width: 18px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#7212ff" d="M391.17,103.47H352.54v109.7h38.63ZM285,103H246.37V212.75H285ZM120.83,0,24.31,91.42V420.58H140.14V512l96.53-91.42h77.25L487.69,256V0ZM449.07,237.75l-77.22,73.12H294.61l-67.6,64v-64H140.14V36.58H449.07Z"></path></svg></i>
 				<span>Zaloguj się przez Twitch</span>
-			</button>
+			</a>
 		</div>
 	</form>
-	Nie masz jeszcze konta? <a href="@Url.Action("Register", "Login")">Zarejestruj się!</a>
+	<span>Nie masz jeszcze konta? <a href="@Url.Action("Register", "Login")">Zarejestruj się!</a></span>
 </div>
 
 @section Scripts {
 	<script>
 		const loginAccountUrl = '@Url.Action("LoginAccount", "Login")';
+		const passwordAccountResetUrl = '@Url.Action("RequestPasswordReset", "Login")';
 		const homeUrl = '@Url.Action("Index", "Home")';
 	</script>
 	<script src="~/js/common.js"></script>

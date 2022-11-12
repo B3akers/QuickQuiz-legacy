@@ -31,9 +31,9 @@ namespace QuizHouse.ActionFilters
 				return;
 			}
 
-			if (context.HttpContext.Request.Path != "/Home/Logout" &&
-				context.HttpContext.Request.Path != "/Home/ResendEmail" &&
-				context.HttpContext.Request.Path != "/Home/ChangeEmail")
+            var action = (string)context.HttpContext.GetRouteValue("action");
+            if (action != "Logout" &&
+                action != "ResendEmail")
 			{
 				if (!account.EmailConfirmed)
 				{

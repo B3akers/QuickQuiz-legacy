@@ -28,24 +28,26 @@ namespace QuizHouse
             services.AddSession(options =>
             {
                 options.Cookie.Name = "session";
-                options.IdleTimeout = TimeSpan.FromHours(1);
+                options.IdleTimeout = TimeSpan.FromMinutes(15);
             });
 
             services.AddControllersWithViews();
             services.AddResponseCaching();
+            services.AddHttpClient();
 
             services.AddSingleton<QuizService>();
             services.AddSingleton<ConnectionManager>();
             services.AddSingleton<WebSocketHandler>();
             services.AddSingleton<GamesService>();
             services.AddSingleton<JwtTokensService>();
+            services.AddSingleton<IAccountConnector, AccountConnectorService>();
             services.AddSingleton<IEmailProvider, EmailProviderService>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddSingleton<IAccountRepository, AccountRepositoryService>();
             services.AddSingleton<IUserAuthentication, UserAuthenticationService>();
             services.AddHostedService<GamesTickService>();
-			services.AddHostedService<DatabaseBackgroundService>();
-			services.AddHostedService<ConfigureMongoDbIndexesService>();
+            services.AddHostedService<DatabaseBackgroundService>();
+            services.AddHostedService<ConfigureMongoDbIndexesService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
