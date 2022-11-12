@@ -10,35 +10,35 @@ using System.Threading.Tasks;
 namespace QuizHouse.ActionFilters
 {
 
-    public class AdminActionFilter : IAsyncActionFilter
-    {
-        private IUserAuthentication _userAuthentication;
-        private IAccountRepository _accountRepository;
+	public class AdminActionFilter : IAsyncActionFilter
+	{
+		private IUserAuthentication _userAuthentication;
+		private IAccountRepository _accountRepository;
 
-        public AdminActionFilter(IUserAuthentication userAuthentication, IAccountRepository accountRepository)
-        {
-            _userAuthentication = userAuthentication;
-            _accountRepository = accountRepository;
-        }
+		public AdminActionFilter(IUserAuthentication userAuthentication, IAccountRepository accountRepository)
+		{
+			_userAuthentication = userAuthentication;
+			_accountRepository = accountRepository;
+		}
 
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
-        {
-            var account = await _userAuthentication.GetAuthenticatedUser(context.HttpContext);
-            if (account == null)
-            {
-                context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Login", action = "Index" })) { Permanent = false };
-                return;
-            }
+		public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+		{
+			var account = await _userAuthentication.GetAuthenticatedUser(context.HttpContext);
+			if (account == null)
+			{
+				context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Login", action = "Index" })) { Permanent = false };
+				return;
+			}
 
-            if (!account.IsAdmin)
-            {
-                context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "Index" })) { Permanent = false };
-                return;
-            }
+			if (!account.IsAdmin)
+			{
+				context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "Index" })) { Permanent = false };
+				return;
+			}
 
-            context.HttpContext.Items["userAccount"] = account;
+			context.HttpContext.Items["userAccount"] = account;
 
-            await next();
-        }
-    }
+			await next();
+		}
+	}
 }

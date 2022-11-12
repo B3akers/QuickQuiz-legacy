@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Services
 {
-    public class JwtTokensService
-    {
-        private readonly IConfiguration _configuration;
-        public JwtTokensService(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-        public string GenerateToken(ClaimsIdentity claims, DateTime? expires)
-        {
+	public class JwtTokensService
+	{
+		private readonly IConfiguration _configuration;
+		public JwtTokensService(IConfiguration configuration)
+		{
+			_configuration = configuration;
+		}
+		public string GenerateToken(ClaimsIdentity claims, DateTime? expires)
+		{
 			var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]));
 			var tokenHandler = new JwtSecurityTokenHandler();
 			var tokenDescriptor = new SecurityTokenDescriptor
@@ -34,7 +34,7 @@ namespace QuizHouse.Services
 		}
 
 		public bool ValidateToken(string token)
-        {
+		{
 			var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]));
 			var tokenHandler = new JwtSecurityTokenHandler();
 			try
@@ -55,5 +55,5 @@ namespace QuizHouse.Services
 			}
 			return true;
 		}
-    }
+	}
 }

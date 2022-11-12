@@ -8,28 +8,28 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Controllers
 {
-    public class WebSocketsController : ControllerBase
-    {
-        private WebSocketHandler _webSocketHandler;
+	public class WebSocketsController : ControllerBase
+	{
+		private WebSocketHandler _webSocketHandler;
 
-        public WebSocketsController(WebSocketHandler webSocketHandler)
-        {
-            _webSocketHandler = webSocketHandler;
-        }
+		public WebSocketsController(WebSocketHandler webSocketHandler)
+		{
+			_webSocketHandler = webSocketHandler;
+		}
 
-        [HttpGet("/ws")]
-        public async Task Get()
-        {
-            if (HttpContext.WebSockets.IsWebSocketRequest)
-            {
-                using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+		[HttpGet("/ws")]
+		public async Task Get()
+		{
+			if (HttpContext.WebSockets.IsWebSocketRequest)
+			{
+				using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-                await _webSocketHandler.Connection(webSocket);
-            }
-            else
-            {
-                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-            }
-        }
-    }
+				await _webSocketHandler.Connection(webSocket);
+			}
+			else
+			{
+				HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+			}
+		}
+	}
 }

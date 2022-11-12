@@ -24,16 +24,16 @@ namespace QuizHouse.ActionFilters
 
 		public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
 		{
-            var account = await _userAuthentication.GetAuthenticatedUser(context.HttpContext);
+			var account = await _userAuthentication.GetAuthenticatedUser(context.HttpContext);
 			if (account == null)
 			{
 				context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Login", action = "Index" })) { Permanent = false };
 				return;
 			}
 
-            var action = (string)context.HttpContext.GetRouteValue("action");
-            if (action != "Logout" &&
-                action != "ResendEmail")
+			var action = (string)context.HttpContext.GetRouteValue("action");
+			if (action != "Logout" &&
+				action != "ResendEmail")
 			{
 				if (!account.EmailConfirmed)
 				{

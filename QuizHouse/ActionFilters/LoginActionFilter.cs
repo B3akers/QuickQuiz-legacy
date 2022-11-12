@@ -11,30 +11,30 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.ActionFilters
 {
-    public class LoginActionFilter : IAsyncActionFilter
-    {
-        private IUserAuthentication _userAuthentication;
+	public class LoginActionFilter : IAsyncActionFilter
+	{
+		private IUserAuthentication _userAuthentication;
 
-        public LoginActionFilter(IUserAuthentication userAuthentication)
-        {
-            _userAuthentication = userAuthentication;
-        }
+		public LoginActionFilter(IUserAuthentication userAuthentication)
+		{
+			_userAuthentication = userAuthentication;
+		}
 
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
-        {
-            var action = (string)context.HttpContext.GetRouteValue("action");
-            if (action != "ConfirmEmail" &&
-                action != "TwitchLogin")
-            {
-                var account = await _userAuthentication.GetAuthenticatedUser(context.HttpContext);
-                if (account != null)
-                {
-                    context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "Index" })) { Permanent = false };
-                    return;
-                }
-            }
+		public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+		{
+			var action = (string)context.HttpContext.GetRouteValue("action");
+			if (action != "ConfirmEmail" &&
+				action != "TwitchLogin")
+			{
+				var account = await _userAuthentication.GetAuthenticatedUser(context.HttpContext);
+				if (account != null)
+				{
+					context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "Index" })) { Permanent = false };
+					return;
+				}
+			}
 
-            await next();
-        }
-    }
+			await next();
+		}
+	}
 }

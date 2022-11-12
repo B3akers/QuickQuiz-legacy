@@ -13,76 +13,76 @@ using System.Threading.Tasks;
 
 namespace QuizHouse
 {
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+	public class Startup
+	{
+		public Startup(IConfiguration configuration)
+		{
+			Configuration = configuration;
+		}
 
-        public IConfiguration Configuration { get; }
+		public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSession(options =>
-            {
-                options.Cookie.Name = "session";
-                options.IdleTimeout = TimeSpan.FromMinutes(15);
-            });
+		// This method gets called by the runtime. Use this method to add services to the container.
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddSession(options =>
+			{
+				options.Cookie.Name = "session";
+				options.IdleTimeout = TimeSpan.FromMinutes(15);
+			});
 
-            services.AddControllersWithViews();
-            services.AddResponseCaching();
-            services.AddHttpClient();
+			services.AddControllersWithViews();
+			services.AddResponseCaching();
+			services.AddHttpClient();
 
-            services.AddSingleton<QuizService>();
-            services.AddSingleton<ConnectionManager>();
-            services.AddSingleton<WebSocketHandler>();
-            services.AddSingleton<GamesService>();
-            services.AddSingleton<JwtTokensService>();
-            services.AddSingleton<IAccountConnector, AccountConnectorService>();
-            services.AddSingleton<IEmailProvider, EmailProviderService>();
-            services.AddSingleton<IPasswordHasher, PasswordHasher>();
-            services.AddSingleton<IAccountRepository, AccountRepositoryService>();
-            services.AddSingleton<IUserAuthentication, UserAuthenticationService>();
-            services.AddHostedService<GamesTickService>();
-            services.AddHostedService<DatabaseBackgroundService>();
-            services.AddHostedService<ConfigureMongoDbIndexesService>();
-        }
+			services.AddSingleton<QuizService>();
+			services.AddSingleton<ConnectionManager>();
+			services.AddSingleton<WebSocketHandler>();
+			services.AddSingleton<GamesService>();
+			services.AddSingleton<JwtTokensService>();
+			services.AddSingleton<IAccountConnector, AccountConnectorService>();
+			services.AddSingleton<IEmailProvider, EmailProviderService>();
+			services.AddSingleton<IPasswordHasher, PasswordHasher>();
+			services.AddSingleton<IAccountRepository, AccountRepositoryService>();
+			services.AddSingleton<IUserAuthentication, UserAuthenticationService>();
+			services.AddHostedService<GamesTickService>();
+			services.AddHostedService<DatabaseBackgroundService>();
+			services.AddHostedService<ConfigureMongoDbIndexesService>();
+		}
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
-            app.UseResponseCaching();
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		{
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
+			else
+			{
+				app.UseExceptionHandler("/Home/Error");
+			}
+			app.UseResponseCaching();
 
-            app.UseSession();
+			app.UseSession();
 
-            app.UseStaticFiles();
+			app.UseStaticFiles();
 
-            app.UseRouting();
+			app.UseRouting();
 
-            var wsOptions = new WebSocketOptions()
-            {
-                KeepAliveInterval = TimeSpan.FromSeconds(120)
-            };
-            app.UseWebSockets(wsOptions);
+			var wsOptions = new WebSocketOptions()
+			{
+				KeepAliveInterval = TimeSpan.FromSeconds(120)
+			};
+			app.UseWebSockets(wsOptions);
 
-            app.UseAuthorization();
+			app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Login}/{action=Index}");
-            });
-        }
-    }
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapControllerRoute(
+					name: "default",
+					pattern: "{controller=Login}/{action=Index}");
+			});
+		}
+	}
 }

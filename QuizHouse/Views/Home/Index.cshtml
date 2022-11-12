@@ -1,4 +1,6 @@
 ﻿@{
 	ViewData["Title"] = "Panel użytkownika";
-	Layout = "~/Views/Shared/_LayoutHome.cshtml";
+	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
 }
+
+@{await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");}

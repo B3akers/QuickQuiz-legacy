@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Interfaces
 {
-    public interface IPasswordHasher
-    {
-        public string Hash(string password);
-        public bool Check(string hash, string password);
-    }
+	public interface IPasswordHasher
+	{
+		public string Hash(string password);
+		public bool Check(string hash, string password);
+	}
 }
