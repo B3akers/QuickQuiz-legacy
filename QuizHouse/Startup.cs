@@ -35,17 +35,18 @@ namespace QuizHouse
 			services.AddResponseCaching();
 			services.AddHttpClient();
 
-			services.AddSingleton<QuizService>();
-			services.AddSingleton<ConnectionManager>();
-			services.AddSingleton<WebSocketHandler>();
-			services.AddSingleton<GamesService>();
-			services.AddSingleton<JwtTokensService>();
+			services.AddSingleton<DatabaseService>();
+			services.AddSingleton<ConnectionManagerOld>();
+			services.AddSingleton<WebSocketHandlerOld>();
+			services.AddSingleton<GamesServiceOld>();
+			services.AddSingleton<GameManagerService>();
+			services.AddSingleton<IJwtTokenHandler, JwtTokenHandlerService>();
 			services.AddSingleton<IAccountConnector, AccountConnectorService>();
 			services.AddSingleton<IEmailProvider, EmailProviderService>();
 			services.AddSingleton<IPasswordHasher, PasswordHasher>();
 			services.AddSingleton<IAccountRepository, AccountRepositoryService>();
 			services.AddSingleton<IUserAuthentication, UserAuthenticationService>();
-			services.AddHostedService<GamesTickService>();
+			services.AddHostedService<GamesTickServiceOld>();
 			services.AddHostedService<DatabaseBackgroundService>();
 			services.AddHostedService<ConfigureMongoDbIndexesService>();
 		}

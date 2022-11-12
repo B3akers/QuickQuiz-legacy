@@ -10,9 +10,9 @@ namespace QuizHouse.Controllers
 {
 	public class WebSocketsController : ControllerBase
 	{
-		private WebSocketHandler _webSocketHandler;
+		private WebSocketHandlerOld _webSocketHandler;
 
-		public WebSocketsController(WebSocketHandler webSocketHandler)
+		public WebSocketsController(WebSocketHandlerOld webSocketHandler)
 		{
 			_webSocketHandler = webSocketHandler;
 		}

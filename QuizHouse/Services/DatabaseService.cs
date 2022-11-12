@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Services
 {
-	public class QuizService
+	public class DatabaseService
 	{
 		private readonly IMongoCollection<CategoryDTO> _categoriesCollection;
 		private readonly IMongoCollection<AnswerDTO> _answersCollection;
@@ -21,7 +21,7 @@ namespace QuizHouse.Services
 
 		private MongoClient _client;
 
-		public QuizService(IConfiguration configuration)
+		public DatabaseService(IConfiguration configuration)
 		{
 			_client = new MongoClient(configuration["Mongo:ConnectionString"]);
 			var mongoDatabase = _client.GetDatabase(configuration["Mongo:DatabaseName"]);

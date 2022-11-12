@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using QuizHouse.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Services
 {
-	public class JwtTokensService
+	public class JwtTokenHandlerService : IJwtTokenHandler
 	{
 		private readonly IConfiguration _configuration;
-		public JwtTokensService(IConfiguration configuration)
+		public JwtTokenHandlerService(IConfiguration configuration)
 		{
 			_configuration = configuration;
 		}

@@ -13,11 +13,11 @@ namespace QuizHouse.Services
 {
 	public class UserAuthenticationService : IUserAuthentication
 	{
-		private QuizService _quizService;
+		private DatabaseService _quizService;
 		private IPasswordHasher _passwordHasher;
 		private IAccountRepository _accountRepository;
 
-		public UserAuthenticationService(QuizService quizService, IPasswordHasher passwordHasher, IAccountRepository accountRepository)
+		public UserAuthenticationService(DatabaseService quizService, IPasswordHasher passwordHasher, IAccountRepository accountRepository)
 		{
 			_quizService = quizService;
 			_passwordHasher = passwordHasher;

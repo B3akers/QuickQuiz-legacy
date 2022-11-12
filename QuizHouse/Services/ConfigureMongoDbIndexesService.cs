@@ -11,10 +11,10 @@ namespace QuizHouse.Services
 {
 	public class ConfigureMongoDbIndexesService : IHostedService
 	{
-		private readonly QuizService _quizService;
+		private readonly DatabaseService _quizService;
 		private readonly IConfiguration _configuration;
 
-		public ConfigureMongoDbIndexesService(IConfiguration configuration, QuizService quizService) => (_configuration, _quizService) = (configuration, quizService);
+		public ConfigureMongoDbIndexesService(IConfiguration configuration, DatabaseService quizService) => (_configuration, _quizService) = (configuration, quizService);
 
 		public async Task StartAsync(CancellationToken cancellationToken)
 		{

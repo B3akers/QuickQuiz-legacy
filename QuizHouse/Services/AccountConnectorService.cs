@@ -14,9 +14,9 @@ namespace QuizHouse.Services
 	{
 		private readonly IHttpClientFactory _httpClientFactory;
 		private readonly IConfiguration _configuration;
-		private readonly QuizService _quizService;
+		private readonly DatabaseService _quizService;
 
-		public AccountConnectorService(IHttpClientFactory httpClientFactory, IConfiguration configuration, QuizService quizService)
+		public AccountConnectorService(IHttpClientFactory httpClientFactory, IConfiguration configuration, DatabaseService quizService)
 		{
 			_httpClientFactory = httpClientFactory;
 			_configuration = configuration;

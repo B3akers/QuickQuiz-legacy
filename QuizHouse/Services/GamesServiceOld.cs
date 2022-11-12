@@ -71,16 +71,16 @@ namespace QuizHouse.Services
 		public List<string> ExcludedCategoriesList { get; set; }
 	}
 
-	public class GamesService
+	public class GamesServiceOld
 	{
 		private ConcurrentDictionary<string, QuizGame> _games = new ConcurrentDictionary<string, QuizGame>(StringComparer.OrdinalIgnoreCase);
 
-		private ConnectionManager _webSocketConnectionManager;
-		private QuizService _quizService;
+		private ConnectionManagerOld _webSocketConnectionManager;
+		private DatabaseService _quizService;
 
 		private JsonSerializerSettings _jsonSerializerSettings;
 
-		public GamesService(ConnectionManager webSocketConnectionManager, QuizService quizService)
+		public GamesServiceOld(ConnectionManagerOld webSocketConnectionManager, DatabaseService quizService)
 		{
 			_webSocketConnectionManager = webSocketConnectionManager;
 			_quizService = quizService;

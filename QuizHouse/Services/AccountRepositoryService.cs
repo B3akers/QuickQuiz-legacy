@@ -12,13 +12,13 @@ namespace QuizHouse.Services
 {
 	public class AccountRepositoryService : IAccountRepository
 	{
-		private QuizService _quizService;
+		private DatabaseService _quizService;
 		private IPasswordHasher _passwordHasher;
 		private IEmailProvider _emailProvider;
 
 		private Collation _ignoreCaseCollation;
 
-		public AccountRepositoryService(QuizService quizService, IPasswordHasher passwordHasher, IEmailProvider emailProvider)
+		public AccountRepositoryService(DatabaseService quizService, IPasswordHasher passwordHasher, IEmailProvider emailProvider)
 		{
 			_quizService = quizService;
 			_passwordHasher = passwordHasher;

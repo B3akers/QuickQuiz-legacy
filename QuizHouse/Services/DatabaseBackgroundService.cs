@@ -10,8 +10,8 @@ namespace QuizHouse.Services
 {
 	public class DatabaseBackgroundService : BackgroundService
 	{
-		private QuizService _quizService;
-		public DatabaseBackgroundService(QuizService quizService)
+		private DatabaseService _quizService;
+		public DatabaseBackgroundService(DatabaseService quizService)
 		{
 			_quizService = quizService;
 		}

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using QuizHouse.Interfaces;
 using QuizHouse.Services;
 using System;
 using System.Collections.Concurrent;
@@ -92,7 +93,7 @@ namespace QuizHouse.WebSockets
 		public bool SocketAuthorized { get; set; }
 		public long LastPingTime { get; set; }
 	}
-	public class ConnectionManager
+	public class ConnectionManagerOld
 	{
 		private ConcurrentDictionary<string, ConcurrentDictionary<string, WebSocket>> _gameSockets = new ConcurrentDictionary<string, ConcurrentDictionary<string, WebSocket>>();
 
@@ -197,19 +198,19 @@ namespace QuizHouse.WebSockets
 		}
 	}
 
-	public class WebSocketHandler
+	public class WebSocketHandlerOld
 	{
-		private ConnectionManager _webSocketConnectionManager;
-		private GamesService _gamesService;
-		private JwtTokensService _jwtTokensService;
+		private ConnectionManagerOld _webSocketConnectionManager;
+		private GamesServiceOld _gamesService;
+		private IJwtTokenHandler _jwtTokenHandler;
 
 		private JsonSerializerSettings _jsonSerializerSettings;
 
-		public WebSocketHandler(ConnectionManager webSocketConnectionManager, GamesService gamesService, JwtTokensService jwtTokensService)
+		public WebSocketHandlerOld(ConnectionManagerOld webSocketConnectionManager, GamesServiceOld gamesService, IJwtTokenHandler jwtTokenHandler)
 		{
 			_webSocketConnectionManager = webSocketConnectionManager;
 			_gamesService = gamesService;
-			_jwtTokensService = jwtTokensService;
+			_jwtTokenHandler = jwtTokenHandler;
 
 			_jsonSerializerSettings = new JsonSerializerSettings
 			{
@@ -524,7 +525,7 @@ namespace QuizHouse.WebSockets
 					{
 						var token = JsonConvert.DeserializeObject<LoginWebSocketPacket>(packet.Value);
 
-						if (!_jwtTokensService.ValidateToken(token.Token))
+						if (!_jwtTokenHandler.ValidateToken(token.Token))
 							return;
 
 						var tokenHandler = new JwtSecurityTokenHandler();

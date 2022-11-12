@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Services
 {
-	public class GamesTickService : BackgroundService
+	public class GamesTickServiceOld : BackgroundService
 	{
-		private GamesService _gamesService;
-		public GamesTickService(GamesService gamesService)
+		private GamesServiceOld _gamesService;
+		public GamesTickServiceOld(GamesServiceOld gamesService)
 		{
 			_gamesService = gamesService;
 		}

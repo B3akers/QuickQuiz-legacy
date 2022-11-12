@@ -2,6 +2,8 @@
 using QuizHouse.ActionFilters;
 using QuizHouse.Dto;
 using QuizHouse.Interfaces;
+using QuizHouse.Models;
+using QuizHouse.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,18 +14,26 @@ namespace QuizHouse.Controllers
 	[TypeFilter(typeof(HomeActionFilter))]
 	public class HomeController : Controller
 	{
-		IUserAuthentication _userAuthentication;
-		IAccountRepository _accountRepository;
+		private readonly IUserAuthentication _userAuthentication;
+		private readonly IAccountRepository _accountRepository;
+		private readonly DatabaseService _databaseService;
 
-		public HomeController(IUserAuthentication userAuthentication, IAccountRepository accountRepository)
+		public HomeController(IUserAuthentication userAuthentication, IAccountRepository accountRepository, DatabaseService databaseService)
 		{
 			_userAuthentication = userAuthentication;
 			_accountRepository = accountRepository;
+			_databaseService = databaseService;
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			return View();
+			var account = HttpContext.Items["userAccount"] as AccountDTO;
+
+			var model = new HomeIndexModel();
+			model.ModelNavBar = new NavBarModel() { Username = account.Username };
+			model.Categories = await _databaseService.GetCategoriesAsync();
+
+			return View(model);
 		}
 
 		[HttpGet]
