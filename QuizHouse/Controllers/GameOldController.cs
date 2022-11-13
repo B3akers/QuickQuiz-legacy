@@ -65,7 +65,6 @@ namespace QuizHouse.Controllers
 		}
 
 		[HttpPost]
-		[Route("/JoinGame")]
 		public IActionResult JoinGame([FromBody] JoinGameParametrs joinGameParametrs)
 		{
 			if (!ModelState.IsValid)
@@ -114,13 +113,12 @@ namespace QuizHouse.Controllers
 		}
 
 		[HttpGet]
-		[Route("/TwitchLogin")]
 		public async Task<IActionResult> TwitchLogin(string code)
 		{
 			try
 			{
 				if (string.IsNullOrEmpty(code))
-					return new RedirectResult(Url.Action("Index", "Home", null, Request.Scheme), false);
+					return new RedirectResult(Url.Action("Index", "GameOld", null, Request.Scheme), false);
 
 				var values = new Dictionary<string, string>
 				{
@@ -128,7 +126,7 @@ namespace QuizHouse.Controllers
 					{ "client_secret", _configuration["Twitch:ClientSecret"] },
 					{ "code", code },
 					{ "grant_type", "authorization_code" },
-					{ "redirect_uri", Url.Action("TwitchLogin", "Home", null, Request.Scheme) },
+					{ "redirect_uri", Url.Action("TwitchLogin", "GameOld", null, Request.Scheme) },
 				};
 
 				var content = new FormUrlEncodedContent(values);
@@ -160,11 +158,11 @@ namespace QuizHouse.Controllers
 				}),
 				DateTime.UtcNow.AddDays(30));
 
-				return new RedirectResult(Url.Action("Index", "Home", new { username_token = twitchUsernameToken }), false);
+				return new RedirectResult(Url.Action("Index", "GameOld", new { username_token = twitchUsernameToken }), false);
 			}
 			catch
 			{
-				return new RedirectResult(Url.Action("Index", "Home"), false);
+				return new RedirectResult(Url.Action("Index", "GameOld"), false);
 			}
 		}
 
@@ -177,7 +175,6 @@ namespace QuizHouse.Controllers
 		}
 
 		[HttpPost]
-		[Route("/CreateGame")]
 		public IActionResult CreateGame([FromBody] CreateGameParametrs createGameParametrs)
 		{
 			if (!ModelState.IsValid)
