@@ -64,7 +64,3 @@ body, html {
     color: red;
     font-weight: bold;
 }
-
-thead {
-    border-bottom: 1px solid white;
-}

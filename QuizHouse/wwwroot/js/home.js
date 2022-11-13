@@ -26,3 +26,7 @@ function playSoloClick() {
             toastr.error('Błąd ' + error.toString());
         });
 }
+
+(function () {
+    showMessagesFromUrl();
+})();

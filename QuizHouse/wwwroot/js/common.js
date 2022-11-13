@@ -58,6 +58,14 @@ function translateCode(code) {
             return 'Link do resetu twojego hasła został wysłany na podany adres email!';
         case 'password_reseted':
             return 'Hasło zostało zresetowane, twoje tymczasowe hasło zostało wysłane na twój adres email!';
+        case 'invalid_password':
+            return 'Nieprawidłowe hasło!';
+        case 'password_changed':
+            return 'Hasło zostało zmienione!';
+        case 'connection_removed':
+            return 'Połączenie zostało usunięte!';
+        case 'invalid_model':
+            return 'Nieprawidłowe dane formularza!';
     }
 
     return code;
