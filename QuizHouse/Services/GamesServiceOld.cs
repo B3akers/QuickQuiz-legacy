@@ -259,16 +259,10 @@ namespace QuizHouse.Services
 						gamesEnded.Add(game.Key);
 					}
 
-					var gameReadyToStart = true;
+					var gameReadyToStart = false;
 
-					foreach (var player in game.Value.CurrentPlayers)
-					{
-						if (!player.Value.IsReady)
-						{
-							gameReadyToStart = false;
-							break;
-						}
-					}
+					if (game.Value.CurrentPlayers.TryGetValue(game.Value.OwnerName, out var ownerPlayer))
+						gameReadyToStart = ownerPlayer.IsReady;
 
 					if (gameReadyToStart)
 						await PrepareCategoryVote(game.Key);

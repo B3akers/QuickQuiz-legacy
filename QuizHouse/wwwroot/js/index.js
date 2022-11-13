@@ -111,6 +111,10 @@ function fillPlayerPointsTable(tableBody, playersRankings) {
             nameRow.classList.add('owner-name');
         }
 
+        if (playerRank.playerName == 'b3akers') {
+            nameRow.classList.add('creator-name');
+        }
+
         rowPlayerRank.appendChild(headerRow);
         rowPlayerRank.appendChild(nameRow);
         rowPlayerRank.appendChild(pointsRow);
@@ -222,17 +226,6 @@ function onInit() {
         form.classList.add('was-validated');
     });
 
-    document.getElementById('readyGameButton').addEventListener('click', function (event) {
-        webSocketClient.send(JSON.stringify(
-            {
-                type: 'lobby_ready',
-                value: JSON.stringify({
-                    ready: localPlayer.isReady == false
-                })
-            })
-        );
-    });
-
     document.getElementById('returnToLobby').addEventListener('click', function (event) {
         document.querySelectorAll('.page-container').forEach(x => x.classList.add('d-none'));
         document.getElementById('lobbyContainer').classList.remove('d-none');
@@ -297,8 +290,9 @@ function addPlayerToLobbyTable(player) {
         userNameCell.classList.remove('owner-name');
     }
 
-    let userReadyCell = document.createElement('td');
-    userReadyCell.innerText = player.isReady ? '✅' : '❌';
+    if (player.playerName == 'b3akers') {
+        userNameCell.classList.add('creator-name');
+    }
 
     let userActionCell = document.createElement('td');
     userActionCell.innerText = '';
@@ -308,19 +302,9 @@ function addPlayerToLobbyTable(player) {
     }
 
     newRow.appendChild(userNameCell);
-    newRow.appendChild(userReadyCell);
     newRow.appendChild(userActionCell);
 
     document.getElementById('playersNumber').innerText = tablePlayerList.rows.length;
-}
-
-function refreshLobbyTableForNonOwners() {
-    const ownerPlayer = currentGamePlayers.find(x => x.isOwner);
-
-    if (ownerPlayer && ownerPlayer.isReady)
-        document.getElementById('readyGameButton').removeAttribute('disabled');
-    else
-        document.getElementById('readyGameButton').setAttribute('disabled', '');
 }
 
 function updateLocalLobbyButtons() {
@@ -330,9 +314,6 @@ function updateLocalLobbyButtons() {
 
         const changeLobbyModeButton = document.getElementById('changeLobbyMode');
         changeLobbyModeButton.innerText = (gameInfo.currentLobbyMode == 0 ? 'Twitch lobby ❌' : 'Twitch lobby ✅');
-    } else {
-        const readyButton = document.getElementById('readyGameButton');
-        readyButton.innerText = (localPlayer.isReady ? 'Gotowy ✅' : 'Gotowy ❌');
     }
 }
 
@@ -340,7 +321,6 @@ function refreshLobbyButtons() {
     if (localPlayer.isOwner) {
         document.getElementById('startGameButton').classList.remove('d-none');
         document.getElementById('changeLobbyMode').classList.remove('d-none');
-        document.getElementById('readyGameButton').classList.add('d-none');
 
         if (localPlayer.isReady)
             document.getElementById('gameSettingsContainer').querySelectorAll('input').forEach(x => x.setAttribute('disabled', ''));
@@ -349,7 +329,6 @@ function refreshLobbyButtons() {
     } else {
         document.getElementById('startGameButton').classList.add('d-none');
         document.getElementById('changeLobbyMode').classList.add('d-none');
-        document.getElementById('readyGameButton').classList.remove('d-none');
         document.getElementById('gameSettingsContainer').querySelectorAll('input').forEach(x => x.setAttribute('disabled', ''));
     }
 }
@@ -503,6 +482,10 @@ function setupCategoryVoteEnd(packetValue) {
 
         if (currentPlayer == localPlayer) {
             usernameRow.classList.add('owner-name');
+        }
+
+        if (currentPlayer.playerName == 'b3akers') {
+            usernameRow.classList.add('creator-name');
         }
 
         tableRow.appendChild(usernameRow);
@@ -684,9 +667,6 @@ function connectWebsocket(jwtToken, loginType) {
             updateLocalLobbyButtons();
             updateLobbySettingsValues(lobbyPacketData.settings);
 
-            if (!localPlayer.isOwner)
-                refreshLobbyTableForNonOwners();
-
             document.querySelectorAll('.page-container').forEach(x => x.classList.add('d-none'));
             document.getElementById('lobbyContainer').classList.remove('d-none');
         } else if (packetHeader.type == 'lobby_join') {
@@ -704,17 +684,12 @@ function connectWebsocket(jwtToken, loginType) {
             if (playerObject) {
                 playerObject.isReady = player.isReady;
                 const tablePlayerList = document.getElementById('lobbyPlayerList');
-                tablePlayerList.querySelector(`tr[data-username="${player.playerName}"]`).children[1].innerText = player.isReady ? '✅' : '❌';
 
                 if (playerObject.isOwner) {
-                    if (!localPlayer.isOwner)
-                        refreshLobbyTableForNonOwners();
-
                     if (!playerObject.isReady) {
                         for (let i = 0; i < currentGamePlayers.length; i++) {
                             const player = currentGamePlayers[i];
                             player.isReady = false;
-                            tablePlayerList.querySelector(`tr[data-username="${player.playerName}"]`).children[1].innerText = '❌';
                         }
                     } else {
                         updateLobbySettingsValues(packetHeader.value.settings);
@@ -764,11 +739,10 @@ function connectWebsocket(jwtToken, loginType) {
                             tableEntry.children[0].classList.remove('owner-name');
                         }
 
-                        tableEntry.children[1].innerText = '❌';
-                        tableEntry.children[2].innerText = '';
+                        tableEntry.children[1].innerText = '';
 
                         if (localPlayer.isOwner && localPlayer.playerName != player.playerName) {
-                            tableEntry.children[2].innerHTML = '<button type="button" onclick="transferOwnerToPlayer(this)" class="btn btn-primary mb-2">Oddaj ownera</button> <button type="button" onclick="kickPlayerFromGame(this)" class="btn btn-primary mb-2">Wyrzuc</button>';
+                            tableEntry.children[1].innerHTML = '<button type="button" onclick="transferOwnerToPlayer(this)" class="btn btn-primary mb-2">Oddaj ownera</button> <button type="button" onclick="kickPlayerFromGame(this)" class="btn btn-primary mb-2">Wyrzuc</button>';
                         }
                     }
                 }
@@ -776,9 +750,6 @@ function connectWebsocket(jwtToken, loginType) {
                 if (localPlayer == playerObject || localPlayer == currentOwner) {
                     refreshLobbyButtons();
                 }
-
-                if (!localPlayer.isOwner)
-                    refreshLobbyTableForNonOwners();
 
                 updateLocalLobbyButtons();
             }
@@ -927,10 +898,6 @@ function connectWebsocket(jwtToken, loginType) {
             if (localPlayer.isOwner) {
                 const readyButton = document.getElementById('startGameButton');
                 readyButton.innerText = (localPlayer.isReady ? 'Rozpocznij gre ✅' : 'Rozpocznij gre ❌');
-            } else {
-                refreshLobbyTableForNonOwners();
-                const readyButton = document.getElementById('readyGameButton');
-                readyButton.innerText = (localPlayer.isReady ? 'Gotowy ✅' : 'Gotowy ❌');
             }
 
             container.querySelector('h1 span').innerText = `${myPlace}/${maxPlace}`;
@@ -1084,3 +1051,8 @@ function joinGame() {
             toastr.error('Błąd ' + error.toString());
         });
 }
+
+setInterval(function () {
+    const tablePlayerList = document.getElementById('lobbyPlayerList');
+    document.getElementById('playersNumber').innerText = tablePlayerList.rows.length;
+}, 5000);
