@@ -14,6 +14,14 @@
     return response.json();
 }
 
+function getFullImg(urlString) {
+    if (urlString.indexOf('http://') === 0 || urlString.indexOf('https://') === 0) {
+        return urlString;
+    }
+
+    return rootUrl + urlString;
+}
+
 function preloadImage(url) {
     let img = new Image();
     img.src = url;
@@ -90,7 +98,7 @@ function fillPlayerPointsTable(tableBody, playersRankings) {
         let rowPlayerRank = document.createElement('tr');
         rowPlayerRank.dataset.username = playerRank.playerName;
 
-        let incrementPlace = i != 0 && playersRankings[i].points != playersRankings[i - 1].points;    
+        let incrementPlace = i != 0 && playersRankings[i].points != playersRankings[i - 1].points;
 
         if (incrementPlace) {
             currentPlace = currentPlace + 1;
@@ -123,7 +131,7 @@ function fillPlayerPointsTable(tableBody, playersRankings) {
 
     }
 
-    return { myPlace: myPlace, maxPlace: currentPlace};
+    return { myPlace: myPlace, maxPlace: currentPlace };
 }
 
 function parseJwt(token) {
@@ -359,7 +367,7 @@ function fillCategorySelectionTable(categories) {
         imgDiv.classList.add('text-center');
 
         let imgElement = document.createElement('img');
-        imgElement.src = rootUrl + category.icon;
+        imgElement.src = getFullImg(category.icon);
         imgElement.width = 150;
         imgElement.height = 150;
 
@@ -436,7 +444,7 @@ function selectCategoryElement(categoryId) {
 }
 
 function setupCategoryVoteEnd(packetValue) {
-    packetValue.preloadImages.forEach(x => preloadImage(rootUrl + x));
+    packetValue.preloadImages.forEach(x => preloadImage(getFullImg(x)));
 
     gameInfo.currentQuestion = packetValue.questionIndex + 1;
     gameInfo.totalQuestions = packetValue.questionsCount;
@@ -449,7 +457,7 @@ function setupCategoryVoteEnd(packetValue) {
     const container = document.getElementById('prepareQuestionContainer');
     const category = categoriesList[gameInfo.currentCategoryId];
 
-    container.querySelector('img').src = rootUrl + category.icon;
+    container.querySelector('img').src = getFullImg(category.icon);
     container.querySelector('h1').innerText = category.label;
     updateQuestionCounterLabel();
 
@@ -511,7 +519,7 @@ function setupQuestionContainer(questionData) {
 
     if (questionData.image) {
         imageDiv.removeAttribute('disabled');
-        imageDiv.querySelector('img').src = rootUrl + questionData.image;
+        imageDiv.querySelector('img').src = getFullImg(questionData.image);
     } else {
         imageDiv.setAttribute('disabled', '');
     }
