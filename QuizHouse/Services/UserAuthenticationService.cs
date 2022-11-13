@@ -34,11 +34,11 @@ namespace QuizHouse.Services
 			if (permanent)
 			{
 				var devices = _quizService.GetDevicesCollection();
-				var device = new DeviceDTO() { AccountId = account.Id, Key = Randomizer.RandomString(64), LastUse = DateTimeOffset.UtcNow.ToUnixTimeSeconds() };
+				var device = new DeviceDTO() { AccountId = account.Id, Key = Randomizer.RandomString(100), LastUse = DateTimeOffset.UtcNow.ToUnixTimeSeconds() };
 
 				await devices.InsertOneAsync(device);
 
-				context.Response.Cookies.Append("deviceKey", device.Key);
+				context.Response.Cookies.Append("deviceKey", device.Key, new CookieOptions() { Expires = DateTimeOffset.UtcNow.AddYears(1) });
 			}
 
 			context.Session.SetString("passTimestamp", account.LastPasswordChange.ToString());

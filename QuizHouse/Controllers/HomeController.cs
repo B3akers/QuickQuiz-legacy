@@ -25,6 +25,16 @@ namespace QuizHouse.Controllers
 			_databaseService = databaseService;
 		}
 
+		public IActionResult UserSettings()
+		{
+			var account = HttpContext.Items["userAccount"] as AccountDTO;
+
+			var model = new UserSettingsModel();
+			model.ModelNavBar = new NavBarModel() { Username = account.Username };
+			
+			return View(model);
+		}
+
 		public async Task<IActionResult> Index()
 		{
 			var account = HttpContext.Items["userAccount"] as AccountDTO;

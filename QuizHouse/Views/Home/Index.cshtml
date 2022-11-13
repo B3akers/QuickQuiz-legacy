@@ -1,5 +1,5 @@
 ﻿@{
-	ViewData["Title"] = "Panel użytkownika";
+	ViewData["Title"] = "Strona główna";
 	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
 }
 
@@ -9,7 +9,7 @@
 	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml", Model.ModelNavBar);
 }
 
-<div class="container center-main">
+<div class="container mb-5 center-main">
 	<main role="main" class="pb-3">
 		<div class="row">
 			@foreach (var category in Model.Categories)
@@ -31,6 +31,10 @@
 </div>
 
 @section Scripts {
+	<script>
+		const createSoloGameUrl = '@Url.Action("SoloGame", "Game")';
+		const gameIndexUrl = '@Url.Action("Index", "Game")';
+	</script>
 	<script src="~/js/common.js"></script>
 	<script src="~/js/home.js"></script>
 }

@@ -1,0 +1,27 @@
+﻿@{
+	ViewData["Title"] = "Ustawienia";
+	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+@model QuizHouse.Models.UserSettingsModel
+
+@{
+	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml", Model.ModelNavBar);
+}
+
+<div class="container mb-5 center-main">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="col">
+				<h5>Zmiana hasła</h5>
+			</div>
+			<div class="col">
+				<h5>Zmiana nazwy użytkownika</h5>
+			</div>
+		</div>
+
+		<div class="row">
+			<h5>Połączenia</h5>
+		</div>
+	</main>
+</div>

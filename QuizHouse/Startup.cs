@@ -48,7 +48,7 @@ namespace QuizHouse
 			services.AddSingleton<IUserAuthentication, UserAuthenticationService>();
 			services.AddHostedService<GamesTickServiceOld>();
 			services.AddHostedService<DatabaseBackgroundService>();
-			services.AddHostedService<ConfigureMongoDbIndexesService>();
+			services.AddHostedService<ConfigureMongoDbService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
+using QuizHouse.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Services
 {
-	public class ConfigureMongoDbIndexesService : IHostedService
+	public class ConfigureMongoDbService : IHostedService
 	{
 		private readonly DatabaseService _quizService;
 		private readonly IConfiguration _configuration;
 
-		public ConfigureMongoDbIndexesService(IConfiguration configuration, DatabaseService quizService) => (_configuration, _quizService) = (configuration, quizService);
+		public ConfigureMongoDbService(IConfiguration configuration, DatabaseService quizService) => (_configuration, _quizService) = (configuration, quizService);
 
 		public async Task StartAsync(CancellationToken cancellationToken)
 		{
@@ -42,6 +43,9 @@ namespace QuizHouse.Services
 
 			var password_resets = mongoDatabase.GetCollection<Dto.PasswordResetDTO>("password_resets");
 			await password_resets.Indexes.CreateOneAsync(new CreateIndexModel<Dto.PasswordResetDTO>(Builders<Dto.PasswordResetDTO>.IndexKeys.Ascending(x => x.Key), new CreateIndexOptions() { Unique = true }));
+
+			var games = mongoDatabase.GetCollection<Dto.GameDTO>("games");
+			await games.UpdateManyAsync(x => x.GameStatus == GameStatusDTO.Running, Builders<GameDTO>.Update.Set(x => x.GameStatus, GameStatusDTO.Aborted));
 		}
 
 		public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

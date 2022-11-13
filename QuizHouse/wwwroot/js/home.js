@@ -13,4 +13,16 @@ function playSoloClick() {
         return;
     }
 
+    makePostRequest(createSoloGameUrl, { categoryId: category })
+        .then(data => {
+            if (data.error) {
+                toastr.error(translateCode(data.error));
+                return;
+            }
+
+            window.location = gameIndexUrl;
+        })
+        .catch((error) => {
+            toastr.error('Błąd ' + error.toString());
+        });
 }
