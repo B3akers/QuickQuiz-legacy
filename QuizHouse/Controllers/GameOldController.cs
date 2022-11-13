@@ -81,7 +81,7 @@ namespace QuizHouse.Controllers
 			if (gameInfo.GameState != QuizGameState.Lobby)
 				return Json(new { error = "game_running" });
 
-			if (gameInfo.CurrentPlayers.Count >= 100)
+			if (gameInfo.CurrentPlayers.Count >= 200)
 				return Json(new { error = "game_lobby_full" });
 
 			if (gameInfo.LobbyMode == QuizLobbyMode.TwitchAuth)
