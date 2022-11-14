@@ -33,7 +33,21 @@ namespace QuizHouse.Controllers
 		public string ConnectionType { get; set; }
 	}
 
-		[TypeFilter(typeof(HomeActionFilter))]
+	public class ChangeUsernameParametrs
+	{
+		[Required]
+		[StringLength(64)]
+		[MinLength(6)]
+		public string CurrentPassword { get; set; }
+
+		[Required]
+		[StringLength(25)]
+		[MinLength(3)]
+		[RegularExpression("^[a-zA-Z][a-zA-Z0-9_]*(?:\\ [a-zA-Z0-9]+)?$")]
+		public string Username { get; set; }
+	}
+
+	[TypeFilter(typeof(HomeActionFilter))]
 	public class HomeController : Controller
 	{
 		private readonly IUserAuthentication _userAuthentication;
@@ -55,6 +69,7 @@ namespace QuizHouse.Controllers
 
 			var model = new UserSettingsModel();
 			model.AccountConnections = account.Connections;
+			model.Username = account.Username;
 			model.ModelNavBar = new NavBarModel() { Username = account.Username };
 
 			return View(model);
@@ -76,11 +91,30 @@ namespace QuizHouse.Controllers
 		{
 			if (!ModelState.IsValid)
 				return Json(new { error = "invalid_model" });
-			
+
 			var account = HttpContext.Items["userAccount"] as AccountDTO;
 			await _accountConnector.RemoveConnection(account, parametrs.ConnectionType);
 
 			return Json(new { success = "connection_removed" });
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameParametrs parametrs)
+		{
+			if (!ModelState.IsValid)
+				return Json(new { error = "invalid_model" });
+
+			if (await _accountRepository.AccountExists(null, parametrs.Username))
+				return Json(new { error = "account_exists" });
+
+			var account = HttpContext.Items["userAccount"] as AccountDTO;
+
+			if (!_userAuthentication.CheckCredentials(account, parametrs.CurrentPassword))
+				return Json(new { error = "invalid_password" });
+
+			await _accountRepository.ChangeUsername(account, parametrs.Username);
+
+			return Json(new { success = "username_changed" });
 		}
 
 		[HttpPost]

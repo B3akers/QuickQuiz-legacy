@@ -31,9 +31,18 @@ namespace QuizHouse.Services
 		{
 			var accounts = _quizService.GetAccountsCollection();
 			var builder = Builders<AccountDTO>.Filter;
-			var filter = builder.Eq(x => x.Email, email);
-			if (!string.IsNullOrEmpty(username))
-				filter |= builder.Eq(x => x.Username, username);
+			var filter = builder.Empty;
+
+			if (!string.IsNullOrEmpty(email))
+			{
+				filter = builder.Eq(x => x.Email, email);
+				if (!string.IsNullOrEmpty(username))
+					filter |= builder.Eq(x => x.Username, username);
+			}
+			else if (!string.IsNullOrEmpty(username))
+			{
+				filter = builder.Eq(x => x.Username, username);
+			}
 
 			return await (await accounts.FindAsync(filter, new FindOptions<AccountDTO>() { Collation = _ignoreCaseCollation })).FirstOrDefaultAsync() != null;
 		}
@@ -182,6 +191,12 @@ namespace QuizHouse.Services
 			}
 
 			await accounts.UpdateOneAsync(x => x.Id == account.Id, Builders<AccountDTO>.Update.Set(x => x.Password, _passwordHasher.Hash(password)));
+		}
+
+		public async Task ChangeUsername(AccountDTO account, string username)
+		{
+			var accounts = _quizService.GetAccountsCollection();
+			await accounts.UpdateOneAsync(x => x.Id == account.Id, Builders<AccountDTO>.Update.Set(x => x.Username, username));
 		}
 	}
 }

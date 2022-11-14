@@ -12,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Formats.Asn1;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection.Metadata;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
@@ -22,7 +23,7 @@ namespace QuizHouse.Controllers
 		[Required]
 		[StringLength(25)]
 		[MinLength(3)]
-		[RegularExpression("^[a-zA-Z0-9 _]*$")]
+		[RegularExpression("^[a-zA-Z][a-zA-Z0-9_]*(?:\\ [a-zA-Z0-9]+)?$")]
 		public string Username { get; set; }
 
 		[Required]
@@ -226,6 +227,8 @@ namespace QuizHouse.Controllers
 		[HttpPost]
 		public async Task<IActionResult> RegisterAccount([FromBody] RegisterAccountParametrs model)
 		{
+			model.Email = model.Email.Trim();
+
 			if (!ModelState.IsValid)
 				return Json(new { error = "invalid_model_register" });
 

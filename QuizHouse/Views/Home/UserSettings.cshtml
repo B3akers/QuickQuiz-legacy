@@ -38,6 +38,19 @@
 			</div>
 			<div class="col m-3 border border-secondary border-3 rounded">
 				<h5>Zmiana nazwy użytkownika</h5>
+				<form class="needs-validation p-2" novalidate>
+					<div class="mb-1">
+						<label for="currentPassword2">Obecne hasło</label>
+						<input type="password" class="form-control" id="currentPassword2" minlength="6" maxlength="64" required>
+					</div>
+					<div class="mb-1">
+						<label for="userName">Nazwa użytkownika</label>
+						<input type="text" class="form-control" id="userName" value="@Model.Username" minlength="3" maxlength="25" pattern="^[a-zA-Z][a-zA-Z0-9_]*(?: [a-zA-Z0-9]+)?$" required>
+					</div>
+					<div class="mb-1">
+						<button type="submit" data-buttontype="username" class="btn btn-primary mt-2">Zmień nazwe</button>
+					</div>
+				</form>
 			</div>
 		</div>
 
@@ -94,6 +107,7 @@
 @section Scripts {
 	<script>
 		const changePasswordUrl = '@Url.Action("ChangePassword", "Home")';
+		const changeUsernameUrl = '@Url.Action("ChangeUsername", "Home")';
 		const removeAccountConnectionUrl = '@Url.Action("RemoveAccountConnection", "Home")';
 	</script>
 	<script src="~/js/common.js"></script>

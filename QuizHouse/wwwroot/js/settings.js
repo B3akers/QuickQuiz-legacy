@@ -33,6 +33,21 @@ function removeAccountConnection(target) {
         });
 }
 
+function changeUsernameSubmit() {
+    makePostRequest(changeUsernameUrl, { currentPassword: document.getElementById('currentPassword2').value, userName: document.getElementById('userName').value })
+        .then(data => {
+            if (data.error) {
+                toastr.error(translateCode(data.error));
+                return;
+            }
+
+            toastr.success(translateCode(data.success));
+        })
+        .catch((error) => {
+            toastr.error('Błąd ' + error.toString());
+        });
+}
+
 (function () {
     showMessagesFromUrl();
 
@@ -48,6 +63,9 @@ function removeAccountConnection(target) {
                     switch (event.submitter.dataset.buttontype) {
                         case 'password':
                             changePasswordSubmit();
+                            break;
+                        case 'username':
+                            changeUsernameSubmit();
                             break;
                     }
                 }

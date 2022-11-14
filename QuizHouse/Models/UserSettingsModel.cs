@@ -7,5 +7,6 @@ namespace QuizHouse.Models
 	{
 		public List<AccountConnectionDTO> AccountConnections { get; set; }
 		public NavBarModel ModelNavBar { get; set; }
+		public string Username { get; set; }
 	}
 }

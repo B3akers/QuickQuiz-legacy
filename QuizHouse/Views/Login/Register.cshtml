@@ -6,7 +6,7 @@
     <form class="needs-validation p-2" oninput='up2.setCustomValidity(up2.value != up.value ? "Passwords do not match." : "")' novalidate>
         <div class="mb-1">
             <label for="userName">Nazwa użytkownika</label>
-            <input type="text" class="form-control" id="userName" minlength="3" maxlength="25" pattern="^[a-zA-Z0-9 _]*$" required>
+            <input type="text" class="form-control" id="userName" minlength="3" maxlength="25" pattern="^[a-zA-Z][a-zA-Z0-9_]*(?: [a-zA-Z0-9]+)?$" required>
         </div>
         <div class="mb-1">
             <label for="userEmail">Email</label>

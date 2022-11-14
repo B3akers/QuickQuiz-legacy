@@ -26,6 +26,7 @@ namespace QuizHouse.Interfaces
 		public Task<AccountDTO> GetAccount(string accountId);
 		public Task<AccountDTO> GetAccountByEmail(string email);
 		public Task DeleteAccount(AccountDTO account);
+		public Task ChangeUsername(AccountDTO account, string username);
 		public Task UpdateLastEmailConfirmSend(AccountDTO account, long time);
 		public Task UpdateLastEmailPasswordSend(AccountDTO account, long time);
 		public Task SendPasswordResetRequest(AccountDTO account, IUrlHelper Url);

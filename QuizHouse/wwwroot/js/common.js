@@ -62,6 +62,8 @@ function translateCode(code) {
             return 'Nieprawidłowe hasło!';
         case 'password_changed':
             return 'Hasło zostało zmienione!';
+        case 'username_changed':
+            return 'Nazwa użytkownika została zmieniona!'
         case 'connection_removed':
             return 'Połączenie zostało usunięte!';
         case 'invalid_model':
