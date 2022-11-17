@@ -76,7 +76,7 @@ namespace QuizHouse.Services
 			return await (await _categoriesCollection.FindAsync(x => true)).ToListAsync();
 		}
 
-		public async Task<List<CategoryDTO>> GetRandomCategoriesAsync(int number, HashSet<string> skip)
+		public async Task<List<CategoryDTO>> GetRandomCategoriesAsync(int number, IEnumerable<string> skip)
 		{
 			var find = new BsonDocument[] {
 				new BsonDocument("$match", new BsonDocument("_id", new BsonDocument("$nin", new BsonArray( skip.Select(x => ObjectId.Parse(x)) )))),
@@ -86,7 +86,7 @@ namespace QuizHouse.Services
 			return (await (await _categoriesCollection.AggregateAsync<CategoryDTO>(find)).ToListAsync());
 		}
 
-		public async Task<List<CategoryDTO>> GetRandomCategoriesWithQuestionCountAsync(int number, HashSet<string> skip, int minimumQuestionCount)
+		public async Task<List<CategoryDTO>> GetRandomCategoriesWithQuestionCountAsync(int number, IEnumerable<string> skip, int minimumQuestionCount)
 		{
 			var find = new BsonDocument[] {
 				new BsonDocument("$match", new BsonDocument("$and", new BsonArray{
@@ -99,7 +99,7 @@ namespace QuizHouse.Services
 			return (await (await _categoriesCollection.AggregateAsync<CategoryDTO>(find)).ToListAsync());
 		}
 
-		public async Task<List<QuestionDTO>> GetRandomQuestionsFromCategoryAsync(string categoryId, int number, HashSet<string> skip)
+		public async Task<List<QuestionDTO>> GetRandomQuestionsFromCategoryAsync(string categoryId, int number, IEnumerable<string> skip)
 		{
 			var find = new BsonDocument[] {
 				new BsonDocument("$match", new BsonDocument("$and", new BsonArray{ new BsonDocument("_id", new BsonDocument("$nin", new BsonArray(skip.Select(x => ObjectId.Parse(x))))), new BsonDocument("Categories", ObjectId.Parse(categoryId)) })),
@@ -109,7 +109,7 @@ namespace QuizHouse.Services
 			return (await (await _questionsCollection.AggregateAsync<QuestionDTO>(find)).ToListAsync());
 		}
 
-		public async Task<List<QuestionDTO>> GetRandomQuestionsFromCategoriesAsync(IEnumerable<string> skipCategories, int number, HashSet<string> skip)
+		public async Task<List<QuestionDTO>> GetRandomQuestionsFromCategoriesAsync(IEnumerable<string> skipCategories, int number, IEnumerable<string> skip)
 		{
 			var find = new BsonDocument[] {
 				new BsonDocument("$match", new BsonDocument("$and", new BsonArray{ new BsonDocument("_id", new BsonDocument("$nin", new BsonArray(skip.Select(x => ObjectId.Parse(x))))), new BsonDocument("Categories", new BsonDocument("$nin", new BsonArray(skipCategories.Select(x => ObjectId.Parse(x)))) )})),
@@ -119,7 +119,7 @@ namespace QuizHouse.Services
 			return (await (await _questionsCollection.AggregateAsync<QuestionDTO>(find)).ToListAsync());
 		}
 
-		public async Task<List<AnswerDTO>> GetAnswersAsync(List<string> answersIds)
+		public async Task<List<AnswerDTO>> GetAnswersAsync(IEnumerable<string> answersIds)
 		{
 			var find = new BsonDocument[] {
 				new BsonDocument("$match", new BsonDocument("_id", new BsonDocument("$in", new BsonArray( answersIds.Select(x => ObjectId.Parse(x)) ))))

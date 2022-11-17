@@ -1,12 +1,19 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using MongoDB.Bson.IO;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using QuizHouse.Dto;
+using QuizHouse.Game;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using QuizHouse.Utility;
+using System.Drawing;
 
 namespace QuizHouse.Services
 {
@@ -19,6 +26,19 @@ namespace QuizHouse.Services
 
 		public async Task StartAsync(CancellationToken cancellationToken)
 		{
+			BsonClassMap.RegisterClassMap<GameBase>(cm => {
+				cm.SetDiscriminatorIsRequired(false);
+				cm.SetIsRootClass(false);
+			});
+
+			BsonClassMap.RegisterClassMap<GamePlayerBase>(cm => {
+				cm.SetDiscriminatorIsRequired(false);
+				cm.SetIsRootClass(false);
+			});
+
+			BsonSerializer.RegisterDiscriminatorConvention(typeof(GameBase), NullDiscriminatorConvention.Instance);
+			BsonSerializer.RegisterDiscriminatorConvention(typeof(GamePlayerBase), NullDiscriminatorConvention.Instance);
+
 			var client = _quizService.GetMongoClient();
 			var mongoDatabase = client.GetDatabase(_configuration["Mongo:DatabaseName"]);
 

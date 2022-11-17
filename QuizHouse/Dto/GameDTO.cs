@@ -21,11 +21,10 @@ namespace QuizHouse.Dto
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
+        public long CreationTime { get; set; }
         public GameTypeDTO GameType { get; set; }
         public GameStatusDTO GameStatus { get; set; }
-
-        [BsonRepresentation(BsonType.ObjectId)]
-        public List<string> Players { get; set; }
+        public List<GamePlayerDTO> Players { get; set; }
 
         [BsonRepresentation(BsonType.ObjectId)]
         public List<string> Categories { get; set; }

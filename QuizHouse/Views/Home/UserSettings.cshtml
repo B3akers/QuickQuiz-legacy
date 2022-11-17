@@ -1,16 +1,16 @@
 ﻿@{
 	ViewData["Title"] = "Ustawienia";
 	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+
+	var account = Context.Items["userAccount"] as QuizHouse.Dto.AccountDTO;
 }
 
 @using Microsoft.Extensions.Configuration
 @using QuizHouse.Dto;
 @inject IConfiguration Configuration
 
-@model QuizHouse.Models.UserSettingsModel
-
 @{
-	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml", Model.ModelNavBar);
+	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");
 }
 
 <div class="container mb-5 center-main">
@@ -45,7 +45,7 @@
 					</div>
 					<div class="mb-1">
 						<label for="userName">Nazwa użytkownika</label>
-						<input type="text" class="form-control" id="userName" value="@Model.Username" minlength="3" maxlength="25" pattern="^[a-zA-Z][a-zA-Z0-9_]*(?: [a-zA-Z0-9]+)?$" required>
+						<input type="text" class="form-control" id="userName" value="@account.Username" minlength="3" maxlength="25" pattern="^[a-zA-Z][a-zA-Z0-9_]*(?: [a-zA-Z0-9]+)?$" required>
 					</div>
 					<div class="mb-1">
 						<button type="submit" data-buttontype="username" class="btn btn-primary mt-2">Zmień nazwe</button>
@@ -68,7 +68,7 @@
 				</thead>
 				<tbody>
 
-					@foreach (var connection in Model.AccountConnections)
+					@foreach (var connection in account.Connections)
 					{
 						<tr>
 							@if (connection.Type == "Twitch")

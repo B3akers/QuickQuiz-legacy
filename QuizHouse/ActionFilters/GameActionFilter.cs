@@ -50,7 +50,8 @@ namespace QuizHouse.ActionFilters
                 return;
             }
 
-            if (action != "SoloGame")
+            if (action != "SoloGame" 
+                && action != "Ws")
             {
                 context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "Index" })) { Permanent = false };
                 return;

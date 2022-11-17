@@ -1,7 +1,7 @@
 ﻿@{
+	var account = Context.Items["userAccount"] as QuizHouse.Dto.AccountDTO;
+	bool isAdminController = ViewContext.RouteData.Values["controller"].ToString() == "Admin";
 }
-
-@model QuizHouse.Models.NavBarModel
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	<div class="container-fluid">
@@ -10,13 +10,30 @@
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+			@if (isAdminController)
+			{
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<a class="nav-link" href="@Url.Action("Categories", "Admin")">Kategorie</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="@Url.Action("Questions", "Admin")">Pytania</a>
+					</li>
+				</ul>
+			}
+
 			<div class="h5 navbar-nav ms-auto mb-2 mb-lg-0 d-flex nav-item dropdown">
 				<a class="text-light nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-					@Model.Username
+					@account.Username
 				</a>
 				<ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDropdown">
 					<li><a class="dropdown-item" href="#">Profil</a></li>
 					<li><a class="dropdown-item" href="@Url.Action("UserSettings", "Home")">Ustawienia</a></li>
+					@if (account.IsAdmin)
+					{
+						<li><a class="dropdown-item" href="@Url.Action("Index", "Admin")">Panel admina</a></li>
+					}
 					<li><a class="dropdown-item" href="@Url.Action("Logout", "Home")">Wyloguj się</a></li>
 				</ul>
 			</div>

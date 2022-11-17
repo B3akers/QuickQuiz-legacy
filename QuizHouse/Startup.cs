@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using QuizHouse.Interfaces;
 using QuizHouse.Services;
 using QuizHouse.WebSockets;
@@ -40,6 +42,7 @@ namespace QuizHouse
 			services.AddSingleton<WebSocketHandlerOld>();
 			services.AddSingleton<GamesServiceOld>();
 			services.AddSingleton<GameManagerService>();
+			services.AddSingleton<WebSocketGameHandler>();
 			services.AddSingleton<IJwtTokenHandler, JwtTokenHandlerService>();
 			services.AddSingleton<IAccountConnector, AccountConnectorService>();
 			services.AddSingleton<IEmailProvider, EmailProviderService>();
@@ -47,8 +50,15 @@ namespace QuizHouse
 			services.AddSingleton<IAccountRepository, AccountRepositoryService>();
 			services.AddSingleton<IUserAuthentication, UserAuthenticationService>();
 			services.AddHostedService<GamesTickServiceOld>();
-			services.AddHostedService<DatabaseBackgroundService>();
+            services.AddHostedService<GameTickService>();
+            services.AddHostedService<DatabaseBackgroundService>();
 			services.AddHostedService<ConfigureMongoDbService>();
+
+			JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+			{
+				NullValueHandling = NullValueHandling.Ignore,
+				ContractResolver = new CamelCasePropertyNamesContractResolver()
+			};
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

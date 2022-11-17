@@ -1,3 +1,16 @@
 ﻿@{
-    ViewData["Title"] = "Gra w toku";
+	ViewData["Title"] = "Gra w toku";
+	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+@{
+	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");
+}
+
+@section Scripts {
+	<script>
+		const gameWebsocketUrl = '@Url.Action("Ws", "Game", null, @Context.Request.Scheme == "https" ? "wss" : "ws")';
+	</script>
+	<script src="~/js/common.js"></script>
+	<script src="~/js/game.js"></script>
 }

@@ -65,22 +65,12 @@ namespace QuizHouse.Controllers
 
 		public IActionResult UserSettings()
 		{
-			var account = HttpContext.Items["userAccount"] as AccountDTO;
-
-			var model = new UserSettingsModel();
-			model.AccountConnections = account.Connections;
-			model.Username = account.Username;
-			model.ModelNavBar = new NavBarModel() { Username = account.Username };
-
-			return View(model);
+			return View();
 		}
 
 		public async Task<IActionResult> Index()
 		{
-			var account = HttpContext.Items["userAccount"] as AccountDTO;
-
 			var model = new HomeIndexModel();
-			model.ModelNavBar = new NavBarModel() { Username = account.Username };
 			model.Categories = await _databaseService.GetCategoriesAsync();
 
 			return View(model);

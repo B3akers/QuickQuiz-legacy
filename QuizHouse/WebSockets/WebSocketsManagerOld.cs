@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.WebSockets
 {
-	public class WebSocketPacket
+	public class WebSocketPacketOld
 	{
 		[JsonProperty("type")]
 		public string Type { get; set; }
@@ -85,7 +85,7 @@ namespace QuizHouse.WebSockets
 		public List<string> ExcludedCategoriesList { get; set; }
 	}
 
-	public class WebsocketPlayerConnection
+	public class WebsocketPlayerConnectionOld
 	{
 		public WebSocket Socket { get; set; }
 		public string Username { get; set; }
@@ -218,7 +218,7 @@ namespace QuizHouse.WebSockets
 			};
 		}
 
-		private async Task HandlePacket(WebsocketPlayerConnection socketPlayerConnection, WebSocketPacket packet)
+		private async Task HandlePacket(WebsocketPlayerConnectionOld socketPlayerConnection, WebSocketPacketOld packet)
 		{
 			try
 			{
@@ -707,7 +707,7 @@ namespace QuizHouse.WebSockets
 
 		public async Task Connection(WebSocket socket)
 		{
-			var socketPlayerConnection = new WebsocketPlayerConnection()
+			var socketPlayerConnection = new WebsocketPlayerConnectionOld()
 			{
 				Socket = socket,
 				SocketAuthorized = false,
@@ -747,8 +747,8 @@ namespace QuizHouse.WebSockets
 					{
 						try
 						{
-							var packet = JsonConvert.DeserializeObject<WebSocketPacket>(data);
-							await HandlePacket(socketPlayerConnection, JsonConvert.DeserializeObject<WebSocketPacket>(data));
+							var packet = JsonConvert.DeserializeObject<WebSocketPacketOld>(data);
+							await HandlePacket(socketPlayerConnection, JsonConvert.DeserializeObject<WebSocketPacketOld>(data));
 						}
 						catch { }
 

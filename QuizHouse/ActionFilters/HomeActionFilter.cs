@@ -31,20 +31,18 @@ namespace QuizHouse.ActionFilters
 				return;
 			}
 
+			context.HttpContext.Items["userAccount"] = account;
+
 			var action = (string)context.HttpContext.GetRouteValue("action");
 			if (action != "Logout" &&
 				action != "ResendEmail")
 			{
 				if (!account.EmailConfirmed)
 				{
-					var viewData = new ViewDataDictionary(new Microsoft.AspNetCore.Mvc.ModelBinding.EmptyModelMetadataProvider(), new Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary()) { Model = new EmailConfirmModel() { Email = account.Email } };
-
-					context.Result = new ViewResult() { ViewName = "~/Views/Home/EmailConfirm.cshtml", ViewData = viewData };
+					context.Result = new ViewResult() { ViewName = "~/Views/Home/EmailConfirm.cshtml" };
 					return;
 				}
 			}
-
-			context.HttpContext.Items["userAccount"] = account;
 
 			await next();
 		}

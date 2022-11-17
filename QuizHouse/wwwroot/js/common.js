@@ -84,3 +84,15 @@ function showMessagesFromUrl() {
         toastr.error(translateCode(urlParams.get('error')));
     }
 }
+
+(function () {
+    const currentAction = window.location.href.substring(window.location.href.lastIndexOf('/') + 1).toLocaleLowerCase();
+    document.querySelectorAll('ul.navbar-nav').forEach(x => {
+        x.querySelectorAll('a').forEach(a => {
+            const action = a.href.substring(a.href.lastIndexOf('/') + 1).toLocaleLowerCase();
+            if (action == currentAction) {
+                a.classList.add('active');
+            }
+        });
+    });
+})();
