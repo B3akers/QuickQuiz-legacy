@@ -1,4 +1,5 @@
 ﻿using QuizHouse.Dto;
+using QuizHouse.Game;
 using QuizHouse.Services;
 using System;
 using System.Collections.Concurrent;
@@ -37,21 +38,31 @@ namespace QuizHouse.WebSockets
 
 			if (!_activeConnections.TryAdd(account.Id, socket))
 			{
-				await oldSocket.CloseAsync((WebSocketCloseStatus)3001, "Another connection", CancellationToken.None);
+				await socket.CloseAsync((WebSocketCloseStatus)3001, "Another connection", CancellationToken.None);
 				return;
 			}
 
+			GameBase userGame = null;
+			GamePlayerBase playerBase = null;
+
 			if (_gameManagerService.TryAssignSocketToPlayer(account.LastGameId, account.Id, socket))
 			{
-				var userGame = _gameManagerService.GetActiveGame(account.LastGameId);
+				userGame = _gameManagerService.GetActiveGame(account.LastGameId);
 				if (userGame != null)
 				{
+					playerBase = userGame.GetPlayer(account.Id);
 					await socket.SendAsync(
 								new ArraySegment<byte>(userGame.GetGameStatePacket(account.Id)),
 								WebSocketMessageType.Text,
 								true,
 								CancellationToken.None);
 				}
+			}
+
+			if (userGame == null)
+			{
+				await socket.CloseAsync((WebSocketCloseStatus)3003, "Game not found", CancellationToken.None);
+				return;
 			}
 
 			try
@@ -68,6 +79,12 @@ namespace QuizHouse.WebSockets
 						break;
 					}
 
+					if (userGame.GameStatus != GameStatusDTO.Running)
+					{
+						await socket.CloseAsync((WebSocketCloseStatus)3002, "Game aborted", CancellationToken.None);
+						break;
+					}
+
 					var data = Encoding.UTF8.GetString(buffer, 0, receiveResult.Count);
 
 					if (data == "#1")
@@ -80,7 +97,7 @@ namespace QuizHouse.WebSockets
 					}
 					else
 					{
-
+						await userGame.HandlePlayerData(playerBase, data);
 					}
 
 					receiveResult = await socket.ReceiveAsync(

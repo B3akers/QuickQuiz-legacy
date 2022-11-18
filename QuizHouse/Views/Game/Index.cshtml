@@ -7,9 +7,72 @@
 	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");
 }
 
+<div class="container center-main center-nav">
+	<div class="container mb-5 page-container text-center d-none" id="prepareQuestionContainer">
+		<div class="row justify-content-center p-2">
+			<div>
+				<img width="200" height="200" src="" />
+			</div>
+		</div>
+		<div class="row justify-content-center p-2">
+			<h1 class="prevent-select"></h1>
+		</div>
+		<div class="row justify-content-center">
+			<h4 class="prevent-select"></h4>
+		</div>
+		<div class="row justify-content-center mt-4">
+			<table class="table table-borderless text-white">
+				<thead>
+					<tr>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+
+	<div class="container mb-5 page-container text-center d-none" id="questionContainer">
+		<div class="row justify-content-center p-2">
+			<h1 class="prevent-select"></h1>
+		</div>
+		<div class="row justify-content-center p-3 question-img">
+			<img width="350" height="350" src="" style="object-fit: contain;" />
+		</div>
+		<div class="progress mb-3" style="width: 100%;">
+			<div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%; background-color: #f0ad4e;"></div>
+		</div>
+		<div class="question-table">
+		</div>
+	</div>
+
+	<div class="container mb-5 page-container d-none" id="endGameResultContainer">
+		<div class="row justify-content-center p-2 text-center">
+			<h1>Koniec gry, twoje miejsce <span class="badge bg-secondary"></span></h1>
+		</div>
+
+		<div class="row justify-content-center text-white mt-4">
+			<table class="table table-borderless text-white">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Nazwa użytkownika</th>
+						<th scope="col">Punkty</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
 @section Scripts {
 	<script>
 		const gameWebsocketUrl = '@Url.Action("Ws", "Game", null, @Context.Request.Scheme == "https" ? "wss" : "ws")';
+		const getCategoriesUrl = '@Url.Action("GetCategories", "Api")';
+		const rootUrl = '@Url.Content("~")';
 	</script>
 	<script src="~/js/common.js"></script>
 	<script src="~/js/game.js"></script>

@@ -15,6 +15,8 @@ namespace QuizHouse.Dto
 	{
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
+		
+		public double Points { get; set; }
 
 		public List<GamePlayerSelectDTO> Answers = new List<GamePlayerSelectDTO>();
 

@@ -64,3 +64,15 @@ body, html {
     color: red;
     font-weight: bold;
 }
+
+.center-nav {
+    height: calc(100% - 7rem);
+    max-width: initial;
+    overflow: auto;
+}
+
+.prevent-select {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
