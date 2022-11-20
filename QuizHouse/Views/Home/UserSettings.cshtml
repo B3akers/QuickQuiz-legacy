@@ -5,6 +5,10 @@
 	var account = Context.Items["userAccount"] as QuizHouse.Dto.AccountDTO;
 }
 
+@section Stylesheets {
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+}
+
 @using Microsoft.Extensions.Configuration
 @using QuizHouse.Dto;
 @inject IConfiguration Configuration
@@ -81,7 +85,7 @@
 								<td>@connection.Type</td>
 								<td>@twitchConnection.UserId</td>
 								<td>@twitchConnection.Displayname</td>
-								<td><button onclick="removeAccountConnection(this)" class="btn btn-primary mt-2">Rozłącz</button></td>
+								<td><i title="Rozłącz" role="button" onclick="removeAccountConnection(this)" class="fa fa-lg fa-trash"></i></td>
 							}
 							else
 							{

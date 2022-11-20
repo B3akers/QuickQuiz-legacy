@@ -9,7 +9,7 @@
             window.location = loginHomeUrl + '?success=account_created';
         })
         .catch((error) => {
-            toastr.error('Błąd ' + error.toString());
+            toastr.error(error.toString());
         });
 }
 
@@ -24,7 +24,7 @@ function loginSubmit() {
             window.location = homeUrl;
         })
         .catch((error) => {
-            toastr.error('Błąd ' + error.toString());
+            toastr.error(error.toString());
         });
 }
 
@@ -41,7 +41,7 @@ function resetPassword() {
                 toastr.success(translateCode(data.success));
             })
             .catch((error) => {
-                toastr.error('Błąd ' + error.toString());
+                toastr.error(error.toString());
             });
     }
     email.parentElement.classList.add('was-validated');

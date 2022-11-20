@@ -10,7 +10,7 @@
                 toastr.success(translateCode(data.success));
             })
             .catch((error) => {
-                toastr.error('Błąd ' + error.toString());
+                toastr.error(error.toString());
             });
     });
 })();

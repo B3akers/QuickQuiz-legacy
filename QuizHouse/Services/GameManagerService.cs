@@ -52,13 +52,14 @@ namespace QuizHouse.Services
 
 		public async Task<string> CreateSoloGame(AccountDTO account, string categoryId)
 		{
-			var questions = await _databaseService.GetRandomQuestionsFromCategoryAsync(categoryId, 2, Enumerable.Empty<string>());
+			var questions = await _databaseService.GetRandomQuestionsFromCategoryAsync(categoryId, 6, Enumerable.Empty<string>());
 			if (questions.Count == 0)
 				return string.Empty;
 
 			var gamePlayer = new GamePlayerBase();
 			gamePlayer.Id = account.Id;
 			gamePlayer.Username = account.Username;
+			gamePlayer.TimeoutTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + GameConstSettings.TIMEOUT_LOBBY_UNKNOWN;
 			foreach (var connection in account.Connections)
 			{
 				if (connection.Type == "Twitch")
@@ -79,7 +80,7 @@ namespace QuizHouse.Services
 			gameBase.GameStatus = GameStatusDTO.Running;
 			gameBase.AddPlayer(gamePlayer);
 
-			var games = _databaseService.GamesCollection();
+			var games = _databaseService.GetGamesCollection();
 			await games.InsertOneAsync(gameBase);
 
 			_activeGames.TryAdd(gameBase.Id, gameBase);
@@ -105,13 +106,20 @@ namespace QuizHouse.Services
 
 			await Task.WhenAll(_gameTickTasks);
 
-			var games = _databaseService.GamesCollection();
+			var games = _databaseService.GetGamesCollection();
 			foreach (var abortedGameId in gamesAborted)
 			{
 				if (_activeGames.TryRemove(abortedGameId, out var gameBase))
 				{
 					await gameBase.FinishGame(gameBase.GameStatus != GameStatusDTO.Finished);
 					await games.ReplaceOneAsync(x => x.Id == gameBase.Id, gameBase);
+
+					List<UpdateOneModel<CategoryDTO>> bulk = new List<UpdateOneModel<CategoryDTO>>();
+					foreach (var category in gameBase.Categories)
+						bulk.Add(new UpdateOneModel<CategoryDTO>(Builders<CategoryDTO>.Filter.Eq(x => x.Id, category), Builders<CategoryDTO>.Update.Inc(x => x.Popularity, 1ul)));
+
+					var categories = _databaseService.GetCategoryCollection();
+					await categories.BulkWriteAsync(bulk);
 				}
 			}
 		}

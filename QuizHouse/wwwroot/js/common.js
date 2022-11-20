@@ -5,7 +5,8 @@
         cache: 'no-cache',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-Csrf-Token-Value': csrfToken
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
@@ -21,6 +22,9 @@ async function makeGetRequest(url = '') {
         cache: 'no-cache',
         credentials: 'same-origin',
         redirect: 'follow',
+        headers: {
+            'X-Csrf-Token-Value': csrfToken
+        },
         referrerPolicy: 'no-referrer'
     });
     return response.json();
@@ -68,6 +72,20 @@ function translateCode(code) {
             return 'Połączenie zostało usunięte!';
         case 'invalid_model':
             return 'Nieprawidłowe dane formularza!';
+        case 'refresh_success':
+            return 'Odswieżenie powiodło się!';
+        case 'category_added':
+            return 'Kategoria została dodana!';
+        case 'record_deleted':
+            return 'Rekord został usunięty!';
+        case 'category_edited':
+            return 'Kategoria została zmieniona!';
+        case 'user_not_found':
+            return 'Nie znaleziono takiego konta!';
+        case 'question_added':
+            return 'Pytanie zostało dodane!';
+        case 'question_edited':
+            return 'Pytanie zostało zmienione!';
     }
 
     return code;
@@ -83,6 +101,21 @@ function showMessagesFromUrl() {
     if (urlParams.has('error')) {
         toastr.error(translateCode(urlParams.get('error')));
     }
+}
+
+function escapeValue(s) {
+    if (!s) {
+        return '';
+    }
+
+    const lookup = {
+        '&': "&amp;",
+        '"': "&quot;",
+        '\'': "&apos;",
+        '<': "&lt;",
+        '>': "&gt;"
+    };
+    return s.replace(/[&"'<>]/g, c => lookup[c]);
 }
 
 (function () {

@@ -15,7 +15,7 @@ namespace QuizHouse.Services
 	{
 		public bool IsReady { get; set; }
 		public bool IsOwner { get; set; }
-		public string AnswerId { get; set; }
+		public int AnswerId { get; set; }
 		public string CategoryVoteId { get; set; }
 		public List<bool> AnswersStatus { get; set; }
 		public double Points { get; set; }
@@ -62,7 +62,6 @@ namespace QuizHouse.Services
 		public HashSet<string> AcknowledgedQuestions { get; set; }
 		public ConcurrentDictionary<string, QuizGamePlayer> CurrentPlayers { get; set; }
 		public List<Dto.QuestionDTO> CurrentQuestions { get; set; }
-		public List<Dto.AnswerDTO> CurrentQuestionsAnswers { get; set; }
 		public int CurrentQuestionIndex { get; set; }
 		public int MaxCategoriesCount { get; set; }
 		public int QuestionsPerCategoryCount { get; set; }
@@ -114,7 +113,6 @@ namespace QuizHouse.Services
 				AcknowledgedCategories = new HashSet<string>(),
 				AcknowledgedQuestions = new HashSet<string>(),
 				CurrentVoteCategories = new ConcurrentDictionary<string, int>(),
-				CurrentQuestionsAnswers = new List<Dto.AnswerDTO>(),
 				MaxCategoriesCount = 7,
 				QuestionsPerCategoryCount = 6,
 				TimeSecondForQuestion = 15,
@@ -331,11 +329,10 @@ namespace QuizHouse.Services
 				else if (game.Value.GameState == QuizGameState.PrepareForQuestions && currentTime - game.Value.PrepareForQuestionsTime > 2000)
 				{
 					foreach (var player in game.Value.CurrentPlayers)
-						player.Value.AnswerId = string.Empty;
+						player.Value.AnswerId = -1;
 
 					var question = game.Value.CurrentQuestions[game.Value.CurrentQuestionIndex];
 
-					game.Value.CurrentQuestionsAnswers = (await _quizService.GetAnswersAsync(question.Answers)).OrderBy(x => Randomizer.Next()).ToList();
 					game.Value.QuestionAnsweringTime = currentTime;
 					game.Value.GameState = QuizGameState.QuestionAnswering;
 
@@ -348,20 +345,20 @@ namespace QuizHouse.Services
 							Text = question.Text,
 							Image = question.Image,
 							QuestionStartTime = game.Value.QuestionAnsweringTime,
-							Answers = game.Value.CurrentQuestionsAnswers.Select(x => new { Id = x.Id, Text = x.Text })
+							Answers = question.Answers
 						}
 					}, _jsonSerializerSettings)), game.Key);
 				}
 				else if (game.Value.GameState == QuizGameState.QuestionAnswering)
 				{
 					if (currentTime - game.Value.QuestionAnsweringTime > (game.Value.TimeSecondForQuestion * 1000 + 1500)
-					   || !game.Value.CurrentPlayers.Values.Any(x => string.IsNullOrEmpty(x.AnswerId)))
+					   || !game.Value.CurrentPlayers.Values.Any(x => x.AnswerId == -1))
 					{
 						game.Value.PrepareForQuestionsTime = currentTime;
 						game.Value.GameState = QuizGameState.QuestionAnswered;
 
 						HashSet<string> playerLeft = new HashSet<string>();
-						List<Tuple<string, string>> playersAnswers = new List<Tuple<string, string>>();
+						List<Tuple<string, int>> playersAnswers = new List<Tuple<string, int>>();
 
 						var currentQuestion = game.Value.CurrentQuestions[game.Value.CurrentQuestionIndex];
 
@@ -369,13 +366,13 @@ namespace QuizHouse.Services
 						{
 							player.Value.AnswersStatus.Add(player.Value.AnswerId == currentQuestion.CorrectAnswer);
 
-							if (string.IsNullOrEmpty(player.Value.AnswerId))
+							if (player.Value.AnswerId == -1)
 							{
 								playerLeft.Add(player.Key);
 								continue;
 							}
 
-							playersAnswers.Add(new Tuple<string, string>(player.Key, player.Value.AnswerId));
+							playersAnswers.Add(new Tuple<string, int>(player.Key, player.Value.AnswerId));
 						}
 
 						if (playerLeft.Count > 0)
@@ -467,14 +464,13 @@ namespace QuizHouse.Services
 						game.Value.AcknowledgedCategories.Clear();
 						game.Value.AcknowledgedQuestions.Clear();
 						game.Value.CurrentVoteCategories.Clear();
-						game.Value.CurrentQuestionsAnswers.Clear();
 
 						foreach (var player in game.Value.CurrentPlayers)
 						{
 							player.Value.IsReady = false;
 							player.Value.AnswersStatus.Clear();
 							player.Value.Points = 0;
-							player.Value.AnswerId = string.Empty;
+							player.Value.AnswerId = -1;
 							player.Value.CategoryVoteId = string.Empty;
 						}
 

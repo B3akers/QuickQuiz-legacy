@@ -21,6 +21,18 @@ namespace QuizHouse.WebSockets
 			_gameManagerService = gameManagerService;
 		}
 
+		public async Task DisconnectUser(string accountId)
+		{
+			if (_activeConnections.TryGetValue(accountId, out WebSocket ws))
+			{
+				if (ws.State == WebSocketState.Open
+					|| ws.State == WebSocketState.CloseReceived)
+				{
+					await ws.CloseAsync((WebSocketCloseStatus)3001, "Another connection", CancellationToken.None);
+				}
+			}
+		}
+
 		public async Task Connection(AccountDTO account, WebSocket socket)
 		{
 			WebSocketReceiveResult receiveResult = null;

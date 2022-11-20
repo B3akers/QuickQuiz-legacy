@@ -30,7 +30,6 @@ namespace QuizHouse.Game
 
 		public ConcurrentDictionary<string, GamePlayerBase> PlayersDict = new ConcurrentDictionary<string, GamePlayerBase>();
 		public List<QuestionDTO> QuestionsData = new List<QuestionDTO>();
-		public List<AnswerDTO> QuestionsAnswerData = new List<AnswerDTO>();
 		public GameSettings GameSettings = new GameSettings();
 		public int CurrentQuestionIndex { get; set; }
 		public GameState CurrentGameState { get; set; }
@@ -77,7 +76,7 @@ namespace QuizHouse.Game
 
 			if (CurrentGameState != GameState.CategorySelection)
 			{
-				var playerAlreadyAnswered = (CurrentGameState == GameState.QuestionAnswered || !string.IsNullOrEmpty(playerBase.AnswerId));
+				var playerAlreadyAnswered = (CurrentGameState == GameState.QuestionAnswered || playerBase.AnswerIndex != -1);
 				var currentQuestion = QuestionsData[CurrentQuestionIndex < QuestionsData.Count ? CurrentQuestionIndex : (QuestionsData.Count - 1)];
 
 				return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
@@ -93,13 +92,13 @@ namespace QuizHouse.Game
 							x.AnswersData,
 							x.CustomColor,
 							x.ConnectionsInfo,
-							AnswerId = playerAlreadyAnswered ? x.AnswerId : string.Empty
+							AnswerIndex = playerAlreadyAnswered ? x.AnswerIndex : -1
 						}),
 						PlayerId = playerBase.Id,
 						GameState = CurrentGameState.ToString(),
 
-						CorrentAnswerId = playerAlreadyAnswered ? currentQuestion.CorrectAnswer : "",
-						QuestionAnswerId = playerBase.AnswerId,
+						CorrentAnswerIndex = playerAlreadyAnswered ? currentQuestion.CorrectAnswer : -1,
+						QuestionAnswerIndex = playerBase.AnswerIndex,
 						CategoryId = Categories[Categories.Count - 1],
 						PreloadImages = QuestionsData.Where(x => string.IsNullOrEmpty(x.Image) == false).Select(x => x.Image),
 						QuestionsCount = QuestionsData.Count,
@@ -111,7 +110,7 @@ namespace QuizHouse.Game
 							currentQuestion.Image,
 							QuestionStartTime = LastTakenAction,
 							GameSettings.QuestionAnswerTime,
-							Answers = QuestionsAnswerData
+							currentQuestion.Answers
 						}
 					}
 				}));
@@ -174,27 +173,33 @@ namespace QuizHouse.Game
 			{
 				if (CurrentGameState != GameState.QuestionAnswering) return;
 
-				if (!string.IsNullOrEmpty(playerBase.AnswerId))
+				if (playerBase.AnswerIndex != -1)
 					return;
 
 				if (CurrentQuestionIndex >= QuestionsData.Count) return;
 
-				var questionId = packet["questionId"].ToString();
-				var answerId = packet["answerId"].ToString();
+				var packetQuestionId = packet["questionId"];
+				var packetAnswerIndex = packet["answerIndex"];
+
+				if (packetQuestionId == null || packetAnswerIndex == null)
+					return;
+
+				var questionId = packetQuestionId.ToString();
+				var answerIndex = (int)packetAnswerIndex;
 
 				var currentQuestion = QuestionsData[CurrentQuestionIndex];
 				if (currentQuestion.Id != questionId)
 					return;
 
 				HashSet<string> notifyPlayers = new HashSet<string>();
-				List<Tuple<string, string>> playersAnswers = new List<Tuple<string, string>>();
+				List<Tuple<string, int>> playersAnswers = new List<Tuple<string, int>>();
 
 				foreach (var player in PlayersDict.Values)
 				{
-					if (!string.IsNullOrEmpty(player.AnswerId))
+					if (playerBase.AnswerIndex != -1)
 					{
 						notifyPlayers.Add(player.Id);
-						playersAnswers.Add(new Tuple<string, string>(player.Id, player.AnswerId));
+						playersAnswers.Add(new Tuple<string, int>(player.Id, player.AnswerIndex));
 					}
 				}
 
@@ -207,13 +212,13 @@ namespace QuizHouse.Game
 						{
 							PlayerId = playerBase.Id,
 							QuestionId = currentQuestion.Id,
-							answerId,
-							IsCorrect = answerId == currentQuestion.CorrectAnswer
+							answerIndex,
+							IsCorrect = answerIndex == currentQuestion.CorrectAnswer
 						}
 					}), notifyPlayers);
 				}
 
-				playerBase.AnswerId = answerId;
+				playerBase.AnswerIndex = answerIndex;
 				playerBase.AnswerTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - LastTakenAction;
 
 				await playerBase.AssignedSocket.SendAsync(
@@ -223,7 +228,7 @@ namespace QuizHouse.Game
 						Value = new
 						{
 							QuestionId = currentQuestion.Id,
-							answerId,
+							answerIndex,
 							currentQuestion.CorrectAnswer,
 							OtherPlayers = playersAnswers
 						}
@@ -432,30 +437,30 @@ namespace QuizHouse.Game
 		private async Task QuestionAnsweringStageTick()
 		{
 			var currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-			if (currentTime - LastTakenAction < (GameSettings.QuestionAnswerTime * 1000) && PlayersDict.Values.Any(x => string.IsNullOrEmpty(x.AnswerId)))
+			if (currentTime - LastTakenAction < (GameSettings.QuestionAnswerTime * 1000) && PlayersDict.Values.Any(x => x.AnswerIndex == -1))
 				return;
 
 			CurrentGameState = GameState.QuestionAnswered;
 			LastTakenAction = currentTime;
 
 			HashSet<string> playerLeft = new HashSet<string>();
-			List<Tuple<string, string>> playersAnswers = new List<Tuple<string, string>>();
+			List<Tuple<string, int>> playersAnswers = new List<Tuple<string, int>>();
 
 			var currentQuestion = QuestionsData[CurrentQuestionIndex];
 
 			foreach (var player in PlayersDict.Values)
 			{
-				if (string.IsNullOrEmpty(player.AnswerId))
+				if (player.AnswerIndex == -1)
 				{
 					player.AnswersData.Add(new Tuple<bool, long>(false, 0));
-					player.Answers.Add(new GamePlayerSelectDTO() { Id = "000000000000000000000000", Time = 0 });
+					player.Answers.Add(new GamePlayerQuestionSelectDTO() { Index = -1, Time = 0 });
 					playerLeft.Add(player.Id);
 				}
 				else
 				{
-					player.AnswersData.Add(new Tuple<bool, long>(player.AnswerId == currentQuestion.CorrectAnswer, player.AnswerTime));
-					player.Answers.Add(new GamePlayerSelectDTO() { Id = player.AnswerId, Time = player.AnswerTime });
-					playersAnswers.Add(new Tuple<string, string>(player.Id, player.AnswerId));
+					player.AnswersData.Add(new Tuple<bool, long>(player.AnswerIndex == currentQuestion.CorrectAnswer, player.AnswerTime));
+					player.Answers.Add(new GamePlayerQuestionSelectDTO() { Index = player.AnswerIndex, Time = player.AnswerTime });
+					playersAnswers.Add(new Tuple<string, int>(player.Id, player.AnswerIndex));
 				}
 			}
 
@@ -467,7 +472,7 @@ namespace QuizHouse.Game
 					Value = new
 					{
 						QuestionId = currentQuestion.Id,
-						AnswerId = (string)null,
+						AnswerIndex = -1,
 						currentQuestion.CorrectAnswer,
 						SkippedPlayers = playerLeft,
 						OtherPlayers = playersAnswers
@@ -496,11 +501,10 @@ namespace QuizHouse.Game
 				return;
 
 			foreach (var player in PlayersDict.Values)
-				player.AnswerId = string.Empty;
+				player.AnswerIndex = -1;
 
 			var question = QuestionsData[CurrentQuestionIndex];
 
-			QuestionsAnswerData = (await databaseService.GetAnswersAsync(question.Answers)).OrderBy(x => Randomizer.Next()).ToList();
 			LastTakenAction = currentTime;
 			CurrentGameState = GameState.QuestionAnswering;
 
@@ -514,7 +518,7 @@ namespace QuizHouse.Game
 					question.Image,
 					QuestionStartTime = LastTakenAction,
 					GameSettings.QuestionAnswerTime,
-					Answers = QuestionsAnswerData
+					question.Answers
 				}
 			}), Enumerable.Empty<string>());
 		}

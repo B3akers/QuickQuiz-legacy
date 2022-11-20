@@ -19,8 +19,8 @@ namespace QuizHouse.Services
 		protected async override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			var accounts = _quizService.GetAccountsCollection();
-			var emailConfirmations = _quizService.EmailConfirmationsCollection();
-			var passwordResets = _quizService.PasswordResetsCollection();
+			var emailConfirmations = _quizService.GetEmailConfirmationsCollection();
+			var passwordResets = _quizService.GetPasswordResetsCollection();
 
 			while (!stoppingToken.IsCancellationRequested)
 			{

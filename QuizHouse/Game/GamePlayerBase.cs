@@ -11,7 +11,7 @@ namespace QuizHouse.Game
 		public string Username { get; set; }
 		public string CustomColor { get; set; }
 		public string CategoryVoteId { get; set; }
-		public string AnswerId { get; set; }
+		public int AnswerIndex { get; set; }
 		public long AnswerTime { get; set; }
 		public long TimeoutTime { get; set; }
 		public List<Tuple<bool, long>> AnswersData = new List<Tuple<bool, long>>();

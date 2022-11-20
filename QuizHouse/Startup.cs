@@ -33,6 +33,12 @@ namespace QuizHouse
 				options.IdleTimeout = TimeSpan.FromMinutes(15);
 			});
 
+			services.AddAntiforgery(options =>
+			{
+				options.FormFieldName = "csrfToken";
+				options.HeaderName = "X-Csrf-Token-Value";
+			});
+
 			services.AddControllersWithViews();
 			services.AddResponseCaching();
 			services.AddHttpClient();

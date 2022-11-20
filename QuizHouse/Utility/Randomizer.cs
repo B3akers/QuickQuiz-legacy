@@ -13,7 +13,6 @@ namespace QuizHouse.Utility
 
 		private static Random GetInstance()
 		{
-
 			Random inst = _local;
 			if (inst == null)
 			{

@@ -188,6 +188,7 @@ namespace QuizHouse.Controllers
 			return new RedirectResult(Url.Action("Index", "Home", new { success = "password_reseted" }), false);
 		}
 
+		[ValidateAntiForgeryToken]
 		[HttpPost]
 		public async Task<IActionResult> RequestPasswordReset([FromBody] RequestPasswordResetParametrs model)
 		{
@@ -208,6 +209,7 @@ namespace QuizHouse.Controllers
 			return Json(new { success = "password_reset_success" });
 		}
 
+		[ValidateAntiForgeryToken]
 		[HttpPost]
 		public async Task<IActionResult> LoginAccount([FromBody] LoginAccountParametrs model)
 		{
@@ -224,6 +226,7 @@ namespace QuizHouse.Controllers
 			return Json(new { success = "login_success" });
 		}
 
+		[ValidateAntiForgeryToken]
 		[HttpPost]
 		public async Task<IActionResult> RegisterAccount([FromBody] RegisterAccountParametrs model)
 		{

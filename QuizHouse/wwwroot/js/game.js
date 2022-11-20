@@ -77,8 +77,8 @@ function initWebsocketConnection() {
                     setupQuestionContainer(packetValue.questionData);
 
                     const questionContainer = document.getElementById('questionContainer');
-                    const correctAnswer = packetValue.correntAnswerId;
-                    if (correctAnswer != '') {
+                    const correctAnswer = packetValue.correntAnswerIndex;
+                    if (correctAnswer != -1) {
                         const questionTable = questionContainer.querySelector('.question-table');
                         questionTable.querySelectorAll('.btn-question').forEach(x => x.classList.add('question-disabled'));
 
@@ -86,22 +86,22 @@ function initWebsocketConnection() {
                         if (correctAnswerButton) {
                             correctAnswerButton.setAttribute('correct', '');
 
-                            if (correctAnswer == packetValue.questionAnswerId) {
+                            if (correctAnswer == packetValue.questionAnswerIndex) {
                                 addSpanBadgeToButton(correctAnswerButton, localPlayer.name);
                             }
                         }
 
                         for (let i = 0; i < packetValue.players.length; i++) {
                             const player = packetValue.players[i];
-                            if (player.answerId == '')
+                            if (player.answerIndex == -1)
                                 continue;
 
-                            if (player.answerId == correctAnswer && player.id == localPlayer.id)
+                            if (player.answerIndex == correctAnswer && player.id == localPlayer.id)
                                 continue;
 
-                            const userAnswerButton = questionTable.querySelector(`button[data-target="${player.answerId}"]`);
+                            const userAnswerButton = questionTable.querySelector(`button[data-target="${player.answerIndex}"]`);
                             if (userAnswerButton) {
-                                if (player.answerId != correctAnswer)
+                                if (player.answerIndex != correctAnswer)
                                     userAnswerButton.setAttribute('wrong', '');
 
                                 addSpanBadgeToButton(userAnswerButton, getPlayerName(player.id));
@@ -142,11 +142,11 @@ function initWebsocketConnection() {
                 correctAnswerButton.setAttribute('correct', '');
             }
 
-            if (packetValue.answerId) {
-                if (packetValue.answerId == correctAnswer) {
+            if (packetValue.answerIndex != -1) {
+                if (packetValue.answerIndex == correctAnswer) {
                     addSpanBadgeToButton(correctAnswerButton, localPlayer.name);
                 } else {
-                    const wrongAnswerButton = questionTable.querySelector(`button[data-target="${packetValue.answerId}"]`);
+                    const wrongAnswerButton = questionTable.querySelector(`button[data-target="${packetValue.answerIndex}"]`);
                     if (wrongAnswerButton) {
                         wrongAnswerButton.setAttribute('wrong', '');
                         addSpanBadgeToButton(wrongAnswerButton, localPlayer.name);
@@ -155,7 +155,7 @@ function initWebsocketConnection() {
 
                 const playerRow = containerTable.querySelector(`table tbody tr[data-user-id="${localPlayer.id}"]`);
                 if (playerRow) {
-                    playerRow.children[gameInfo.currentQuestion].innerText = packetValue.answerId == correctAnswer ? '✅' : '❌';
+                    playerRow.children[gameInfo.currentQuestion].innerText = packetValue.answerIndex == correctAnswer ? '✅' : '❌';
                 }
             }
 
@@ -208,7 +208,7 @@ function initWebsocketConnection() {
 
             const container = document.getElementById('questionContainer');
             const questionTable = container.querySelector('.question-table');
-            const answerButton = questionTable.querySelector(`button[data-target="${packetValue.answerId}"]`);
+            const answerButton = questionTable.querySelector(`button[data-target="${packetValue.answerIndex}"]`);
             if (answerButton) {
                 if (!answerButton.hasAttribute('correct'))
                     answerButton.setAttribute('wrong', '');
@@ -252,9 +252,24 @@ function initWebsocketConnection() {
             initWebsocketConnection();
         })
         .catch((error) => {
-            toastr.error('Błąd ' + error.toString());
+            toastr.error(error.toString());
         });
 })();
+
+function shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+
+    while (currentIndex != 0) {
+
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
+}
 
 function createTwitchBadge(login, displayName) {
 
@@ -498,6 +513,8 @@ function setupQuestionContainer(questionData) {
     const questionTable = container.querySelector('.question-table');
     questionTable.innerHTML = '';
 
+    let mainDivs = [];
+
     let answers = questionData.answers;
     for (let i = 0; i < answers.length; i++) {
         let answer = answers[i];
@@ -508,26 +525,30 @@ function setupQuestionContainer(questionData) {
         let button = document.createElement('button');
         button.setAttribute('type', 'button');
         button.classList.add('btn', 'btn-question', 'mb-2', 'ms-2');
-        button.dataset.target = answer.id;
+        button.dataset.target = i;
 
         button.addEventListener('click', function (event) {
             const targetElement = event.currentTarget;
-            const answerId = targetElement.dataset.target;
+            const answerIndex = parseInt(targetElement.dataset.target);
 
             webSocketClient.send(JSON.stringify(
                 {
                     type: 'question_answer',
-                    answerId: answerId,
+                    answerIndex: answerIndex,
                     questionId: gameInfo.currentQuestionId
                 })
             );
         });
 
         let answerText = document.createElement('h4');
-        answerText.innerText = answer.text;
+        answerText.innerText = answer;
 
         button.appendChild(answerText);
         mainDiv.appendChild(button);
-        questionTable.appendChild(mainDiv);
+
+        mainDivs.push(mainDiv);
     }
+
+    shuffle(mainDivs);
+    mainDivs.forEach(x => questionTable.appendChild(x));
 }

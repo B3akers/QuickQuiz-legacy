@@ -7,6 +7,15 @@
     return selectedCategory.dataset.categoryId;
 }
 
+function addQuestionClick() {
+    const category = getSelectedCategoryId();
+    if (!category) {
+        return;
+    }
+
+
+}
+
 function playSoloClick() {
     const category = getSelectedCategoryId();
     if (!category) {
@@ -23,7 +32,7 @@ function playSoloClick() {
             window.location = gameIndexUrl;
         })
         .catch((error) => {
-            toastr.error('Błąd ' + error.toString());
+            toastr.error(error.toString());
         });
 }
 

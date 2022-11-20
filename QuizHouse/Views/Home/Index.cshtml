@@ -3,6 +3,10 @@
 	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
 }
 
+@section Stylesheets {
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+}
+
 @model QuizHouse.Models.HomeIndexModel
 
 @{
@@ -23,8 +27,7 @@
 			}
 			<div class="dropdown-menu dropdown-menu-dark dropdown-menu-end w-auto" aria-labelledby="dropdownMenuButton">
 				<a class="dropdown-item" onclick="playSoloClick()" href="javascript:void(0);">Graj</a>
-				<a class="dropdown-item" href="javascript:void(0);">Dodaj pytanie</a>
-				<a class="dropdown-item" href="javascript:void(0);">Zgłoś pytanie</a>
+				<a class="dropdown-item" onclick="addQuestionClick()" href="javascript:void(0);">Dodaj pytanie</a>
 			</div>
 		</div>
 	</main>
@@ -35,6 +38,7 @@
 		const createSoloGameUrl = '@Url.Action("SoloGame", "Game")';
 		const gameIndexUrl = '@Url.Action("Index", "Game")';
 	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 	<script src="~/js/common.js"></script>
 	<script src="~/js/home.js"></script>
 }

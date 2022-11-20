@@ -1,5 +1,5 @@
 ﻿@{
-	ViewData["Title"] = "Panel admina - Kategorie";
+	ViewData["Title"] = "Panel admina - Pytania";
 	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
 }
 
@@ -18,24 +18,29 @@
 	<main role="main" class="pb-3">
 		<div class="row">
 			<div class="row m-3 p-3 border border-secondary border-3 rounded">
-				<h5 class="text-center">Kategorie</h5>
+				<h5 class="text-center">Pytania</h5>
 				<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-					<button type="button" onclick="modifyCategory(true)" class="btn btn-dark m-2">Dodaj kategorie</button>
-					<button type="button" onclick="refershQuestionsCount()" class="btn btn-dark m-2">Odświeź ilość pytań</button>
-					<button type="button" onclick="resetPopularity()" class="btn btn-dark m-2">Zresetuj licznik popularności</button>
+					<button type="button" onclick="modifyQuestion(true)" class="btn btn-dark m-2">Dodaj pytanie</button>
 				</div>
-				<table id="categoriesTable" class="table-dark table-striped">
+				<table id="questionsTable" class="table-dark table-striped">
 					<thead>
 						<tr>
-							<th>Nazwa</th>
-							<th>Kolor</th>
-							<th>Logotyp</th>
-							<th>Ilość pytań</th>
+							<th>Id</th>
+							<th>Autor</th>
+							<th>Kategorie</th>
 							<th>Akcja</th>
 						</tr>
 					</thead>
 					<tbody>
 					</tbody>
+					<tfoot>
+						<tr>
+							<th></th>
+							<th></th>
+							<th>Kategoria</th>
+							<th></th>
+						</tr>
+					</tfoot>
 				</table>
 			</div>
 		</div>
@@ -44,17 +49,15 @@
 
 @section Scripts {
 	<script>
-		const getCategoriesUrl = '@Url.Action("GetCategories", "Admin")';
-		const refreshCategoriesQuestions = '@Url.Action("CategoriesRefreshQuestionsCount", "Admin")';
-		const resetPopularityUrl = '@Url.Action("CategoriesResetPopularity", "Admin")';
-
-		const deleteCategoryUrl = '@Url.Action("DeleteCategory", "Admin")';
-		const editCategoryUrl = '@Url.Action("EditCategory", "Admin")';
-		const addCategoryUrl = '@Url.Action("AddCategory", "Admin")';
+		const getQuestionsUrl = '@Url.Action("GetQuestions", "Admin")';
+		const deleteQuestionUrl = '@Url.Action("DeleteQuestion", "Admin")';
+		const addQuestionUrl = '@Url.Action("AddQuestion", "Admin")';
+		const editQuestionUrl = '@Url.Action("EditQuestion", "Admin")';
+		const getCategoriesUrl = '@Url.Action("GetCategories", "Api")';
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 	<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 	<script src="~/js/common.js"></script>
 	<script src="~/js/admin/common.js"></script>
-	<script src="~/js/admin/categories.js"></script>
+	<script src="~/js/admin/questions.js"></script>
 }

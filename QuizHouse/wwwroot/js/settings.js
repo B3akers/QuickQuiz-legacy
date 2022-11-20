@@ -9,7 +9,7 @@
             toastr.success(translateCode(data.success));
         })
         .catch((error) => {
-            toastr.error('Błąd ' + error.toString());
+            toastr.error(error.toString());
         });
 }
 
@@ -29,7 +29,7 @@ function removeAccountConnection(target) {
             toastr.success(translateCode(data.success));
         })
         .catch((error) => {
-            toastr.error('Błąd ' + error.toString());
+            toastr.error(error.toString());
         });
 }
 
@@ -44,7 +44,7 @@ function changeUsernameSubmit() {
             toastr.success(translateCode(data.success));
         })
         .catch((error) => {
-            toastr.error('Błąd ' + error.toString());
+            toastr.error(error.toString());
         });
 }
 

@@ -16,5 +16,6 @@ namespace QuizHouse.Dto
 		public string Color { get; set; }
 		public string Icon { get; set; }
 		public int QuestionCount { get; set; }
+		public ulong Popularity { get; set; }
 	}
 }

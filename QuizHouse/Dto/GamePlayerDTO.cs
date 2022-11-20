@@ -4,10 +4,9 @@ using System.Collections.Generic;
 
 namespace QuizHouse.Dto
 {
-	public class GamePlayerSelectDTO
+	public class GamePlayerQuestionSelectDTO
 	{
-		[BsonRepresentation(BsonType.ObjectId)]
-		public string Id { get; set; }
+		public int Index { get; set; }
 		public long Time { get; set; }
 	}
 
@@ -18,7 +17,7 @@ namespace QuizHouse.Dto
 		
 		public double Points { get; set; }
 
-		public List<GamePlayerSelectDTO> Answers = new List<GamePlayerSelectDTO>();
+		public List<GamePlayerQuestionSelectDTO> Answers = new List<GamePlayerQuestionSelectDTO>();
 
 		[BsonRepresentation(BsonType.ObjectId)]
 		public List<string> Categories = new List<string>();

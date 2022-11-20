@@ -58,7 +58,7 @@ namespace QuizHouse.WebSockets
 	public class QuestionAnswerSocketPacket
 	{
 		[JsonProperty("answerId")]
-		public string AnswerId { get; set; }
+		public int AnswerId { get; set; }
 
 		[JsonProperty("questionId")]
 		public string QuestionId { get; set; }
@@ -281,7 +281,7 @@ namespace QuizHouse.WebSockets
 					else if (packet.Type == "question_answer")
 					{
 						var answer = JsonConvert.DeserializeObject<QuestionAnswerSocketPacket>(packet.Value);
-						if (string.IsNullOrEmpty(answer.AnswerId) || string.IsNullOrEmpty(answer.QuestionId))
+						if (answer.AnswerId == -1 || string.IsNullOrEmpty(answer.QuestionId))
 							return;
 
 						var game = _gamesService.FindGame(socketPlayerConnection.GameId);
@@ -293,7 +293,7 @@ namespace QuizHouse.WebSockets
 						if (!game.CurrentPlayers.TryGetValue(socketPlayerConnection.Username, out var quizPlayer))
 							return;
 
-						if (!string.IsNullOrEmpty(quizPlayer.AnswerId))
+						if (quizPlayer.AnswerId != -1)
 							return;
 
 						var currentQuestion = game.CurrentQuestions[game.CurrentQuestionIndex];
@@ -302,14 +302,14 @@ namespace QuizHouse.WebSockets
 							return;
 
 						HashSet<string> notifyPlayers = new HashSet<string>();
-						List<Tuple<string, string>> playersAnswers = new List<Tuple<string, string>>();
+						List<Tuple<string, int>> playersAnswers = new List<Tuple<string, int>>();
 
 						foreach (var player in game.CurrentPlayers)
 						{
-							if (!string.IsNullOrEmpty(player.Value.AnswerId))
+							if (player.Value.AnswerId != -1)
 							{
 								notifyPlayers.Add(player.Key);
-								playersAnswers.Add(new Tuple<string, string>(player.Key, player.Value.AnswerId));
+								playersAnswers.Add(new Tuple<string, int>(player.Key, player.Value.AnswerId));
 							}
 						}
 
@@ -641,7 +641,7 @@ namespace QuizHouse.WebSockets
 							}
 							else
 							{
-								var playerAlreadyAnswered = (game.GameState == QuizGameState.QuestionAnswered || !string.IsNullOrEmpty(quizPlayer.AnswerId));
+								var playerAlreadyAnswered = (game.GameState == QuizGameState.QuestionAnswered || quizPlayer.AnswerId != -1);
 								var currentQuestion = game.CurrentQuestions[game.CurrentQuestionIndex < game.CurrentQuestions.Count ? game.CurrentQuestionIndex : (game.CurrentQuestions.Count - 1)];
 
 								await socketPlayerConnection.Socket.SendAsync(
@@ -662,7 +662,7 @@ namespace QuizHouse.WebSockets
 											IsOwner = x.Value.IsOwner,
 											IsReady = x.Value.IsReady,
 											AnswerStatus = x.Value.AnswersStatus,
-											AnswerId = playerAlreadyAnswered ? x.Value.AnswerId : string.Empty,
+											AnswerId = playerAlreadyAnswered ? x.Value.AnswerId : -1,
 										}),
 										Settings = new
 										{
@@ -673,7 +673,7 @@ namespace QuizHouse.WebSockets
 											GameMode = (int)game.GameMode,
 											ExcludedCategoriesList = game.ExcludedCategoriesList
 										},
-										CorrentAnswerId = playerAlreadyAnswered ? currentQuestion.CorrectAnswer : "",
+										CorrentAnswerId = playerAlreadyAnswered ? currentQuestion.CorrectAnswer : -1,
 										QuestionAnswerId = quizPlayer.AnswerId,
 										Category = game.CurrentCategory,
 										PreloadImages = game.CurrentQuestions.Select(x => x.Image).Where(x => !string.IsNullOrEmpty(x)),
@@ -685,7 +685,7 @@ namespace QuizHouse.WebSockets
 											Text = currentQuestion.Text,
 											Image = currentQuestion.Image,
 											QuestionStartTime = game.QuestionAnsweringTime,
-											Answers = game.CurrentQuestionsAnswers.Select(x => new { Id = x.Id, Text = x.Text })
+											Answers = currentQuestion.Answers
 										}
 									}
 								}, _jsonSerializerSettings))),

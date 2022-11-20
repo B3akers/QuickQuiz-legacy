@@ -12,15 +12,14 @@ namespace QuizHouse.Services
 	public class DatabaseService
 	{
 		private readonly IMongoCollection<CategoryDTO> _categoriesCollection;
-		private readonly IMongoCollection<AnswerDTO> _answersCollection;
 		private readonly IMongoCollection<QuestionDTO> _questionsCollection;
 		private readonly IMongoCollection<DeviceDTO> _devicesCollection;
 		private readonly IMongoCollection<AccountDTO> _accountsCollection;
 		private readonly IMongoCollection<EmailConfirmationDTO> _emailConfirmationsCollection;
 		private readonly IMongoCollection<PasswordResetDTO> _passwordResetsCollection;
-        private readonly IMongoCollection<GameDTO> _gamesCollection;
+		private readonly IMongoCollection<GameDTO> _gamesCollection;
 
-        private MongoClient _client;
+		private MongoClient _client;
 
 		public DatabaseService(IConfiguration configuration)
 		{
@@ -28,31 +27,36 @@ namespace QuizHouse.Services
 			var mongoDatabase = _client.GetDatabase(configuration["Mongo:DatabaseName"]);
 
 			_categoriesCollection = mongoDatabase.GetCollection<CategoryDTO>("categories");
-			_answersCollection = mongoDatabase.GetCollection<AnswerDTO>("answers");
 			_questionsCollection = mongoDatabase.GetCollection<QuestionDTO>("questions");
 			_devicesCollection = mongoDatabase.GetCollection<DeviceDTO>("devices");
 			_accountsCollection = mongoDatabase.GetCollection<AccountDTO>("accounts");
 			_emailConfirmationsCollection = mongoDatabase.GetCollection<EmailConfirmationDTO>("email_confirmations");
 			_passwordResetsCollection = mongoDatabase.GetCollection<PasswordResetDTO>("password_resets");
-            _gamesCollection = mongoDatabase.GetCollection<GameDTO>("games");
-        }
+			_gamesCollection = mongoDatabase.GetCollection<GameDTO>("games");
+		}
 
-        public MongoClient GetMongoClient()
+		public MongoClient GetMongoClient()
 		{
 			return _client;
 		}
 
-        public IMongoCollection<GameDTO> GamesCollection()
-        {
-            return _gamesCollection;
-        }
+		public IMongoCollection<GameDTO> GetGamesCollection()
+		{
+			return _gamesCollection;
+		}
 
-        public IMongoCollection<PasswordResetDTO> PasswordResetsCollection()
+
+		public IMongoCollection<QuestionDTO> GetQuestionsCollection()
+		{
+			return _questionsCollection;
+		}
+
+		public IMongoCollection<PasswordResetDTO> GetPasswordResetsCollection()
 		{
 			return _passwordResetsCollection;
 		}
 
-		public IMongoCollection<EmailConfirmationDTO> EmailConfirmationsCollection()
+		public IMongoCollection<EmailConfirmationDTO> GetEmailConfirmationsCollection()
 		{
 			return _emailConfirmationsCollection;
 		}
@@ -73,7 +77,7 @@ namespace QuizHouse.Services
 		}
 		public async Task<List<CategoryDTO>> GetCategoriesAsync()
 		{
-			return await (await _categoriesCollection.FindAsync(x => true)).ToListAsync();
+			return await (await _categoriesCollection.FindAsync(Builders<CategoryDTO>.Filter.Empty, new FindOptions<CategoryDTO>() { Sort = Builders<CategoryDTO>.Sort.Descending(x => x.Popularity) })).ToListAsync();
 		}
 
 		public async Task<List<CategoryDTO>> GetRandomCategoriesAsync(int number, IEnumerable<string> skip)
@@ -117,15 +121,6 @@ namespace QuizHouse.Services
 			};
 
 			return (await (await _questionsCollection.AggregateAsync<QuestionDTO>(find)).ToListAsync());
-		}
-
-		public async Task<List<AnswerDTO>> GetAnswersAsync(IEnumerable<string> answersIds)
-		{
-			var find = new BsonDocument[] {
-				new BsonDocument("$match", new BsonDocument("_id", new BsonDocument("$in", new BsonArray( answersIds.Select(x => ObjectId.Parse(x)) ))))
-			};
-
-			return (await (await _answersCollection.AggregateAsync<AnswerDTO>(find)).ToListAsync());
 		}
 	}
 }

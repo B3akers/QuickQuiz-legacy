@@ -14,13 +14,13 @@ namespace QuizHouse.Dto
 		public string Id { get; set; }
 		public string Text { get; set; }
 		public string Image { get; set; }
-		[BsonRepresentation(BsonType.ObjectId)]
-		public string CorrectAnswer { get; set; }
-
-		[BsonRepresentation(BsonType.ObjectId)]
+		public int CorrectAnswer { get; set; }
 		public List<string> Answers { get; set; }
 
 		[BsonRepresentation(BsonType.ObjectId)]
 		public List<string> Categories { get; set; }
+
+		[BsonRepresentation(BsonType.ObjectId)]
+		public string Author { get; set; }
 	}
 }

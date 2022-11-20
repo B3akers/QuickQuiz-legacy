@@ -76,6 +76,7 @@ namespace QuizHouse.Controllers
 			return View(model);
 		}
 
+		[ValidateAntiForgeryToken]
 		[HttpPost]
 		public async Task<IActionResult> RemoveAccountConnection([FromBody] RemoveAccountConnectionParametrs parametrs)
 		{
@@ -88,6 +89,7 @@ namespace QuizHouse.Controllers
 			return Json(new { success = "connection_removed" });
 		}
 
+		[ValidateAntiForgeryToken]
 		[HttpPost]
 		public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameParametrs parametrs)
 		{
@@ -107,6 +109,7 @@ namespace QuizHouse.Controllers
 			return Json(new { success = "username_changed" });
 		}
 
+		[ValidateAntiForgeryToken]
 		[HttpPost]
 		public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordParametrs parametrs)
 		{
@@ -132,6 +135,7 @@ namespace QuizHouse.Controllers
 			return new RedirectResult(Url.Action("Index", "Login"), false);
 		}
 
+		[ValidateAntiForgeryToken]
 		[HttpGet]
 		public async Task<IActionResult> ResendEmail()
 		{

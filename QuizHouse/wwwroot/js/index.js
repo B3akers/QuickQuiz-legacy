@@ -14,6 +14,21 @@
     return response.json();
 }
 
+function shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+
+    while (currentIndex != 0) {
+
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
+}
+
 function getFullImg(urlString) {
     if (urlString.indexOf('http://') === 0 || urlString.indexOf('https://') === 0) {
         return urlString;
@@ -278,7 +293,7 @@ function onInit() {
             onInit();
         })
         .catch((error) => {
-            toastr.error('Błąd ' + error.toString());
+            toastr.error(error.toString());
         });
 })();
 
@@ -531,6 +546,8 @@ function setupQuestionContainer(questionData) {
     const questionTable = container.querySelector('.question-table');
     questionTable.innerHTML = '';
 
+    let mainDivs = [];
+
     let answers = questionData.answers;
     for (let i = 0; i < answers.length; i++) {
         let answer = answers[i];
@@ -541,11 +558,11 @@ function setupQuestionContainer(questionData) {
         let button = document.createElement('button');
         button.setAttribute('type', 'button');
         button.classList.add('btn', 'btn-question', 'mb-2', 'ms-2');
-        button.dataset.target = answer.id;
+        button.dataset.target = i;
 
         button.addEventListener('click', function (event) {
             const targetElement = event.currentTarget;
-            const answerId = targetElement.dataset.target;
+            const answerId = parseInt(targetElement.dataset.target);
 
             webSocketClient.send(JSON.stringify(
                 {
@@ -559,12 +576,16 @@ function setupQuestionContainer(questionData) {
         });
 
         let answerText = document.createElement('h4');
-        answerText.innerText = answer.text;
+        answerText.innerText = answer;
 
         button.appendChild(answerText);
         mainDiv.appendChild(button);
-        questionTable.appendChild(mainDiv);
+
+        mainDivs.push(mainDiv);
     }
+
+    shuffle(mainDivs);
+    mainDivs.forEach(x => questionTable.appendChild(x));
 }
 
 function updateLobbySettingsValues(gameSettings) {
@@ -808,7 +829,7 @@ function connectWebsocket(jwtToken, loginType) {
                 correctAnswerButton.setAttribute('correct', '');
             }
 
-            if (packetHeader.value.answerId) {
+            if (packetHeader.value.answerId != -1) {
                 if (packetHeader.value.answerId == correctAnswer) {
                     addSpanBadgeToButton(correctAnswerButton, localPlayer.playerName);
                 } else {
@@ -978,7 +999,7 @@ function connectWebsocket(jwtToken, loginType) {
 
                     const questionContainer = document.getElementById('questionContainer');
                     const correctAnswer = packetHeader.value.correntAnswerId;
-                    if (correctAnswer != '') {
+                    if (correctAnswer != -1) {
                         const questionTable = questionContainer.querySelector('.question-table');
                         questionTable.querySelectorAll('.btn-question').forEach(x => x.classList.add('question-disabled'));
 
@@ -993,7 +1014,7 @@ function connectWebsocket(jwtToken, loginType) {
 
                         for (let i = 0; i < lobbyPlayers.length; i++) {
                             const player = lobbyPlayers[i];
-                            if (player.answerId == '')
+                            if (player.answerId == -1)
                                 continue;
 
                             if (player.answerId == correctAnswer && player.playerName == localPlayer.playerName)

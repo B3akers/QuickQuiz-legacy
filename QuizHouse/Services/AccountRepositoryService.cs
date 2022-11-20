@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using QuizHouse.Dto;
 using QuizHouse.Interfaces;
 using QuizHouse.Utility;
+using QuizHouse.WebSockets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,17 +13,19 @@ namespace QuizHouse.Services
 {
 	public class AccountRepositoryService : IAccountRepository
 	{
+		private WebSocketGameHandler _gameHandler;
 		private DatabaseService _quizService;
 		private IPasswordHasher _passwordHasher;
 		private IEmailProvider _emailProvider;
 
 		private Collation _ignoreCaseCollation;
 
-		public AccountRepositoryService(DatabaseService quizService, IPasswordHasher passwordHasher, IEmailProvider emailProvider)
+		public AccountRepositoryService(DatabaseService quizService, IPasswordHasher passwordHasher, IEmailProvider emailProvider, WebSocketGameHandler gameHandler)
 		{
 			_quizService = quizService;
 			_passwordHasher = passwordHasher;
 			_emailProvider = emailProvider;
+			_gameHandler = gameHandler;
 
 			_ignoreCaseCollation = new Collation("en", strength: CollationStrength.Secondary);
 		}
@@ -68,7 +71,7 @@ namespace QuizHouse.Services
 			if (account.EmailConfirmed)
 				return;
 
-			var emails = _quizService.EmailConfirmationsCollection();
+			var emails = _quizService.GetEmailConfirmationsCollection();
 			var activeConfirmation = new EmailConfirmationDTO() { AccountId = account.Id, Email = account.Email, CreationTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(), Used = false, Key = Randomizer.RandomString(125) };
 			await emails.InsertOneAsync(activeConfirmation);
 
@@ -80,7 +83,7 @@ namespace QuizHouse.Services
 			if (string.IsNullOrEmpty(key))
 				return (UserRequestConfrimStatus.WrongKey, string.Empty);
 
-			var emails = _quizService.EmailConfirmationsCollection();
+			var emails = _quizService.GetEmailConfirmationsCollection();
 			var activeConfirmation = await (await emails.FindAsync(x => x.Key == key)).FirstOrDefaultAsync();
 			if (activeConfirmation == null)
 				return (UserRequestConfrimStatus.WrongKey, string.Empty);
@@ -136,7 +139,7 @@ namespace QuizHouse.Services
 				return;
 
 			var accounts = _quizService.GetAccountsCollection();
-			var confirmations = _quizService.EmailConfirmationsCollection();
+			var confirmations = _quizService.GetEmailConfirmationsCollection();
 
 			await accounts.DeleteOneAsync(x => x.Id == account.Id);
 			await confirmations.DeleteManyAsync(x => x.AccountId == account.Id);
@@ -144,7 +147,7 @@ namespace QuizHouse.Services
 
 		public async Task SendPasswordResetRequest(AccountDTO account, IUrlHelper Url)
 		{
-			var resets = _quizService.PasswordResetsCollection();
+			var resets = _quizService.GetPasswordResetsCollection();
 			var resetPassword = new PasswordResetDTO() { AccountId = account.Id, CreationTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(), Used = false, Key = Randomizer.RandomString(125) };
 			await resets.InsertOneAsync(resetPassword);
 
@@ -156,7 +159,7 @@ namespace QuizHouse.Services
 			if (string.IsNullOrEmpty(key))
 				return (UserRequestConfrimStatus.WrongKey, string.Empty);
 
-			var resets = _quizService.PasswordResetsCollection();
+			var resets = _quizService.GetPasswordResetsCollection();
 			var activeRequest = await (await resets.FindAsync(x => x.Key == key)).FirstOrDefaultAsync();
 			if (activeRequest == null)
 				return (UserRequestConfrimStatus.WrongKey, string.Empty);
@@ -185,6 +188,7 @@ namespace QuizHouse.Services
 
 			if (logout)
 			{
+				await _gameHandler.DisconnectUser(account.Id);
 				await devices.DeleteManyAsync(x => x.AccountId == account.Id);
 				await accounts.UpdateOneAsync(x => x.Id == account.Id, Builders<AccountDTO>.Update.Set(x => x.Password, _passwordHasher.Hash(password)).Set(x => x.LastPasswordChange, DateTimeOffset.UtcNow.ToUnixTimeSeconds()));
 				return;

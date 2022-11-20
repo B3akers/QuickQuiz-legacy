@@ -35,6 +35,7 @@ namespace QuizHouse.Controllers
 		}
 
 		[HttpPost]
+		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> SoloGame([FromBody] SoloGameParametrs parametrs)
 		{
 			if (!ModelState.IsValid)

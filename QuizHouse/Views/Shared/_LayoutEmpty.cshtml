@@ -7,6 +7,7 @@
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" integrity="sha512-6S2HWzVFxruDlZxI3sXOZZ4/eJ8AcxkQH1+JjSe/ONCEqR9L4Ysq5JdT5ipqtzU7WHalNwzwBv+iE51gNHJNqQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	@await RenderSectionAsync("Stylesheets", required: false)
 </head>
 <body>
 
@@ -18,6 +19,11 @@
 			<a class="text-white" href="https://github.com/B3akers/QuizHouse">QuizHouse.ovh</a>
 		</div>
 	</footer>
+
+	@Html.AntiForgeryToken()
+	<script>
+		const csrfToken = document.getElementsByName('csrfToken')[0].value;
+	</script>
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
