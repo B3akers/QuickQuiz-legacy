@@ -272,7 +272,7 @@ function onInit() {
 
             data.forEach(x => {
                 categoriesList[x.id] = x;
-                if (x.questionCount > 200) {
+                if (x.questionCount >= 200) {
                     let label = document.createElement('label');
                     label.classList.add('checkbox-inline', 'ms-2');
 

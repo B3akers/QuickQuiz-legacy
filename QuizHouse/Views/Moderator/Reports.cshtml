@@ -1,0 +1,90 @@
+﻿@{
+	ViewData["Title"] = "Panel moderatora - Zgłoszenia";
+	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+@model QuizHouse.Models.ModeratorReportsModel
+
+@section Stylesheets {
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+}
+
+@{
+	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");
+}
+
+<div class="container mb-5">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="row m-3 p-3 border border-secondary border-3 rounded">
+				<h5 class="text-center">Zgłoszenia</h5>
+				<table id="reportsTable" class="table-dark table-striped">
+					<thead>
+						<tr>
+							<th></th>
+							<th>Powód</th>
+							<th>Ilość reportujących</th>
+							<th>Waga reportu</th>
+							<th>Kategorie</th>
+							<th>Akcja</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var report in Model.Reports)
+						{
+							var question = Model.Questions.FirstOrDefault(x => x.Id == report.QuestionId);
+							if (question == null)
+								continue;
+
+							<tr>
+								<td><i role="button" onclick="expandQuestionClick(this)" class="fa fa-lg fa-plus m-2"></i></td>
+								<td>@report.Reason.ToString()</td>
+								<td>@report.Accounts.Count</td>
+								<td>@report.Prority</td>
+								<td>
+									@foreach (var category in question.Categories)
+									{
+										<div data-category-id="@category"></div>
+									}
+								</td>
+								<td><button type="button" onclick="acceptReport(this.parentElement.parentElement, '@report.Id')" class="btn btn-dark me-2">Akceptuj</button><button type="button" onclick="declineReport(this.parentElement.parentElement,'@report.Id')" class="btn btn-dark me-2">Odrzuć</button></td>
+							</tr>
+							<tr class="d-none">
+								<td colspan="6">
+									<div class="text-center">
+										<div class="p-2">
+											<h4>@question.Text</h4>
+										</div>
+										<div class="p-3 question-img">
+											<img width="250" height="250" src="@question.Image" style="object-fit: contain;" />
+										</div>
+										<div class="question-table">
+											@for (var i = 0; i < 4; i++)
+											{
+												<div class="row justify-content-center"><button type="button" @(question.CorrectAnswer == i ? "correct" : "wrong")="" class="btn btn-question mb-3" disabled><h5>@question.Answers[i]</h5></button></div>
+											}
+										</div>
+									</div>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</main>
+</div>
+
+@section Scripts {
+	<script>
+		const getCategoriesUrl = '@Url.Action("GetCategories", "Api")';
+		const declineReportUrl = '@Url.Action("DeclineReport", "Moderator")';
+		const acceptReportUrl = '@Url.Action("AcceptReport", "Moderator")';
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+	<script src="~/js/common.js"></script>
+	<script src="~/js/moderator/reports.js"></script>
+}

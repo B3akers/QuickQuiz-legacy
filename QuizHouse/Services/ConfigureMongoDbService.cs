@@ -67,6 +67,9 @@ namespace QuizHouse.Services
 			var password_resets = mongoDatabase.GetCollection<PasswordResetDTO>("password_resets");
 			await password_resets.Indexes.CreateOneAsync(new CreateIndexModel<PasswordResetDTO>(Builders<PasswordResetDTO>.IndexKeys.Ascending(x => x.Key), new CreateIndexOptions() { Unique = true }));
 
+			var question_reports = mongoDatabase.GetCollection<QuestionReportDTO>("question_reports");
+			await question_reports.Indexes.CreateOneAsync(new CreateIndexModel<QuestionReportDTO>(Builders<QuestionReportDTO>.IndexKeys.Ascending(x => x.QuestionId).Ascending(x => x.Status)));
+
 			var games = mongoDatabase.GetCollection<GameDTO>("games");
 			await games.UpdateManyAsync(x => x.GameStatus == GameStatusDTO.Running, Builders<GameDTO>.Update.Set(x => x.GameStatus, GameStatusDTO.Aborted));
 		}

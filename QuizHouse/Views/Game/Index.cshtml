@@ -1,6 +1,12 @@
 ﻿@{
 	ViewData["Title"] = "Gra w toku";
 	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+
+	var account = Context.Items["userAccount"] as QuizHouse.Dto.AccountDTO;
+}
+
+@section Stylesheets {
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
 }
 
 @{
@@ -45,6 +51,14 @@
 		</div>
 		<div class="question-table">
 		</div>
+		<div class="row">
+			<div class="col d-grid justify-content-md-start d-none">
+				<a href="/test" target="_blank" class="btn text-white">Autor pytania</a>
+			</div>
+			<div class="col d-grid justify-content-md-end">
+				<button type="button" onclick="reportQuestion()" class="btn btn-dark">Zgłoś pytanie</button>
+			</div>
+		</div>
 	</div>
 
 	<div class="container mb-5 page-container d-none" id="endGameResultContainer">
@@ -72,8 +86,15 @@
 	<script>
 		const gameWebsocketUrl = '@Url.Action("Ws", "Game", null, @Context.Request.Scheme == "https" ? "wss" : "ws")';
 		const getCategoriesUrl = '@Url.Action("GetCategories", "Api")';
+		const reportQuestionUrl = '@Url.Action("ReportQuestion", "Api")';
 		const rootUrl = '@Url.Content("~")';
+
+		const userGameSettings = {
+			streamerMode: @account.StreamerMode.ToString().ToLower(),
+			myColor: '@(account.CustomColor == null ? "#e80d7b" : account.CustomColor)',
+		};
 	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 	<script src="~/js/common.js"></script>
 	<script src="~/js/game.js"></script>
 }

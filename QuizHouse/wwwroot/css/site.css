@@ -106,6 +106,7 @@ div.dataTables_filter input:focus {
     border-color: #303840;
 }
 
+img:not([src]),
 img[src=""],
 img[src="null"] {
     display: none;

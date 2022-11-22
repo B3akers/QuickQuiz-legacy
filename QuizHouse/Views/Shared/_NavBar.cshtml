@@ -1,6 +1,8 @@
 ﻿@{
 	var account = Context.Items["userAccount"] as QuizHouse.Dto.AccountDTO;
-	bool isAdminController = ViewContext.RouteData.Values["controller"].ToString() == "Admin";
+	var controllerName = ViewContext.RouteData.Values["controller"].ToString();
+	bool isAdminController = controllerName == "Admin";
+	bool isModeratorController = controllerName == "Moderator";
 }
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -12,7 +14,7 @@
 		else
 		{
 			<a class="navbar-brand" href="@Url.Action("Index","Home")">QuizHouse</a>
-		}	
+		}
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
@@ -29,6 +31,14 @@
 					</li>
 				</ul>
 			}
+			else if (isModeratorController)
+			{
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<a class="nav-link" href="@Url.Action("Reports", "Moderator")">Zgłoszenia</a>
+					</li>
+				</ul>
+			}
 
 			<div class="h5 navbar-nav ms-auto mb-2 mb-lg-0 d-flex nav-item dropdown">
 				<a class="text-light nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -40,6 +50,10 @@
 					@if (account.IsAdmin)
 					{
 						<li><a class="dropdown-item" href="@Url.Action("Index", "Admin")">Panel admina</a></li>
+					}
+					@if (account.IsAdmin || account.IsModerator)
+					{
+						<li><a class="dropdown-item" href="@Url.Action("Index", "Moderator")">Panel moderatora</a></li>
 					}
 					<li><a class="dropdown-item" href="@Url.Action("Logout", "Home")">Wyloguj się</a></li>
 				</ul>

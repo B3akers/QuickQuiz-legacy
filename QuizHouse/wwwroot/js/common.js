@@ -82,10 +82,20 @@ function translateCode(code) {
             return 'Kategoria została zmieniona!';
         case 'user_not_found':
             return 'Nie znaleziono takiego konta!';
+        case 'game_not_found':
+            return 'Nie znaleziono takiej gry!';
         case 'question_added':
             return 'Pytanie zostało dodane!';
         case 'question_edited':
             return 'Pytanie zostało zmienione!';
+        case 'report_submitted':
+            return 'Pytanie zostało zgłoszone!';
+        case 'report_handled':
+            return 'Zgłoszenie zostało już rozpatrzone!';
+        case 'report_decline':
+            return 'Zgłoszenie zostało odrzucone!';
+        case 'report_accepted':
+            return 'Zgłoszenie zostało zaakceptowane!';
     }
 
     return code;

@@ -146,7 +146,7 @@ function expandQuestionClick(target) {
             for (let i = 0; i < answers.length; i++) {
                 const answer = answers[i];
                 let attribute = i == questionData.correctAnswer ? 'correct' : 'wrong';
-                questionsHTML += `<div class="row justify-content-center"><button type="button" ${attribute}="" class="btn btn-question mb-3 ms-3" disabled><h5>${escapeValue(answer)}</h5></button></div>`;
+                questionsHTML += `<div class="row justify-content-center"><button type="button" ${attribute}="" class="btn btn-question mb-3" disabled><h5>${escapeValue(answer)}</h5></button></div>`;
             }
 
             td.innerHTML = `<div class="text-center">
@@ -165,7 +165,7 @@ function expandQuestionClick(target) {
         newTr.appendChild(td);
         currentTr.after(newTr);
     } else if (target.classList.replace('fa-minus', 'fa-plus')) {
-        currentTr.nextSibling.remove();
+        currentTr.nextElementSibling.remove();
     }
 }
 

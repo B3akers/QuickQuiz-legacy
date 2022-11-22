@@ -231,7 +231,7 @@ function initWebsocketConnection() {
             container.querySelector('h1 span').innerText = `${myPlace}/${maxPlace}`;
 
             showContainerByName("endGameResultContainer");
-        } 
+        }
     };
 
     webSocketClient.onclose = function (event) {
@@ -255,6 +255,65 @@ function initWebsocketConnection() {
             toastr.error(error.toString());
         });
 })();
+
+function reportQuestion() {
+    $.confirm({
+        title: 'Zgłoś pytanie',
+        content: '' +
+            '<form action="" class="formName">' +
+            '<div class="form-check">' +
+            '<input class="form-check-input" type="radio" data-report-reason="0" name="reportReason" checked><label class="form-check-label">Nieaktualne pytanie</label>' +
+            '</div>' +
+            '<div class="form-check">' +
+            '<input class="form-check-input" type="radio" data-report-reason="1" name="reportReason"><label class="form-check-label">Zła kategoria</label>' +
+            '</div>' +
+            '<div class="form-check">' +
+            '<input class="form-check-input" type="radio" data-report-reason="2" name="reportReason"><label class="form-check-label">Zła odpowiedź</label>' +
+            '</div>' +
+            '<div class="form-check">' +
+            '<input class="form-check-input" type="radio" data-report-reason="3" name="reportReason"><label class="form-check-label">Inne</label>' +
+            '</div>' +
+            `<input type="hidden" name="id" value="${gameInfo.currentQuestionId}" />` +
+            '</form>',
+        theme: 'dark',
+        buttons: {
+            formSubmit: {
+                text: 'Zgłoś',
+                action: function () {
+                    const content = this.$content[0];
+
+                    const id = content.querySelector('input[name="id"]').value.trim();
+                    const reportReason = content.querySelector('input[name="reportReason"]:checked').dataset.reportReason.trim();
+
+                    if (!id || !reportReason) {
+                        toastr.error(translateCode('invalid_model'));
+                        return false;
+                    }
+
+                    const data = { id: id, reportReason: parseInt(reportReason) };
+
+                    makePostRequest(reportQuestionUrl, data)
+                        .then(data => {
+                            if (data.error) {
+                                toastr.error(translateCode(data.error));
+                                return;
+                            }
+
+                            toastr.success(translateCode(data.success));
+                        })
+                        .catch((error) => {
+                            toastr.error(error.toString());
+                        });
+
+                    return true;
+                }
+            },
+            cancel: function () {
+
+            }
+        }
+    })
+}
 
 function shuffle(array) {
     let currentIndex = array.length, randomIndex;
@@ -431,7 +490,7 @@ function loadPlayers(playersArray, localPlayerId) {
     }
 
     localPlayer = currentGamePlayers.find(x => x.id == localPlayerId);
-    localPlayer.color = '#3f0ac7'; //TODO user can change that in profile
+    localPlayer.color = userGameSettings.myColor;
 }
 
 function setupCategoryVoteEnd(packetValue) {
