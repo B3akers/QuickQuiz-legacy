@@ -48,6 +48,21 @@ function changeUsernameSubmit() {
         });
 }
 
+function setPreferencesSubmit() {
+    makePostRequest(setPreferencesUrl, { color: document.getElementById('usernameColor').value, streamerMode: document.getElementById('streamerMode').checked })
+        .then(data => {
+            if (data.error) {
+                toastr.error(translateCode(data.error));
+                return;
+            }
+
+            toastr.success(translateCode(data.success));
+        })
+        .catch((error) => {
+            toastr.error(error.toString());
+        });
+}
+
 (function () {
     showMessagesFromUrl();
 
@@ -66,6 +81,9 @@ function changeUsernameSubmit() {
                             break;
                         case 'username':
                             changeUsernameSubmit();
+                            break;
+                        case 'preferences':
+                            setPreferencesSubmit();
                             break;
                     }
                 }

@@ -30,6 +30,12 @@ namespace QuizHouse.ActionFilters
 				return;
 			}
 
+			if (!string.IsNullOrEmpty(account.BanReason))
+			{
+				context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "Ban" })) { Permanent = false };
+				return;
+			}
+
 			if (!account.IsAdmin && !account.IsModerator)
 			{
 				context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "Index" })) { Permanent = false };

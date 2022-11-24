@@ -34,6 +34,8 @@ namespace QuizHouse.Dto
 		public string Email { get; set; }
 		public string CustomColor { get; set; }
 		public string UserColor { get; set; }
+		public string BanReason { get; set; }
+		public bool ShowBanReason { get; set; }
 		public bool StreamerMode { get; set; }
 		public bool EmailConfirmed { get; set; }
 		public bool IsAdmin { get; set; }
@@ -43,6 +45,7 @@ namespace QuizHouse.Dto
 		public long LastEmailConfirmSend { get; set; }
 		public long LastEmailPasswordSend { get; set; }
 		public int ReportWeight { get; set; }
+		public int ActiveReports { get; set; }
 		public List<AccountConnectionDTO> Connections { get; set; }
 	}
 }

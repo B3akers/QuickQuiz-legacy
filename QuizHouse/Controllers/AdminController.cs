@@ -16,79 +16,6 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace QuizHouse.Controllers
 {
-	public class ModifyCategoryParamters
-	{
-		[RegularExpression("^[a-f\\d]{24}$")]
-		public string Id { get; set; }
-
-		[Required]
-		[MinLength(3)]
-		[MaxLength(40)]
-		public string Label { get; set; }
-
-		[Required]
-		[MinLength(6)]
-		[MaxLength(8)]
-		public string Color { get; set; }
-
-		[Required]
-		[MinLength(3)]
-		[MaxLength(80)]
-		public string Icon { get; set; }
-	}
-
-	public class ModifyQuestionParamters
-	{
-		[RegularExpression("^[a-f\\d]{24}$")]
-		public string Id { get; set; }
-
-		[Required]
-		[MinLength(3)]
-		[MaxLength(350)]
-		public string Label { get; set; }
-
-		[MaxLength(80)]
-		public string Image { get; set; }
-
-		[RegularExpression("^[a-f\\d]{24}$")]
-		public string Author { get; set; }
-
-		[Required]
-		public int CorrectAnswer { get; set; }
-
-		[Required]
-		[MinLength(1)]
-		[MaxLength(250)]
-		public string Answer0 { get; set; }
-
-		[Required]
-		[MinLength(1)]
-		[MaxLength(250)]
-		public string Answer1 { get; set; }
-
-		[Required]
-		[MinLength(1)]
-		[MaxLength(250)]
-		public string Answer2 { get; set; }
-
-		[Required]
-		[MinLength(1)]
-		[MaxLength(250)]
-		public string Answer3 { get; set; }
-
-		[Required]
-		[MinLength(1)]
-		[MaxLength(8)]
-		public List<string> SelectedCategories { get; set; }
-	};
-
-	public class DeleteRecordParamters
-	{
-		[Required]
-		[RegularExpression("^[a-f\\d]{24}$")]
-		public string Id { get; set; }
-	}
-
 	[TypeFilter(typeof(AdminActionFilter))]
 	public class AdminController : Controller
 	{
@@ -115,7 +42,7 @@ namespace QuizHouse.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> DeleteCategory([FromBody] DeleteRecordParamters paramters)
+		public async Task<IActionResult> DeleteCategory([FromBody] DeleteRecordModel paramters)
 		{
 			if (!ModelState.IsValid)
 				return Json(new { error = "invalid_model" });
@@ -128,7 +55,7 @@ namespace QuizHouse.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> DeleteQuestion([FromBody] DeleteRecordParamters paramters)
+		public async Task<IActionResult> DeleteQuestion([FromBody] DeleteRecordModel paramters)
 		{
 			if (!ModelState.IsValid)
 				return Json(new { error = "invalid_model" });
@@ -141,7 +68,7 @@ namespace QuizHouse.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> EditCategory([FromBody] ModifyCategoryParamters paramters)
+		public async Task<IActionResult> EditCategory([FromBody] ModifyCategoryModel paramters)
 		{
 			if (!ModelState.IsValid || string.IsNullOrEmpty(paramters.Id))
 				return Json(new { error = "invalid_model" });
@@ -154,7 +81,7 @@ namespace QuizHouse.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> EditQuestion([FromBody] ModifyQuestionParamters paramters)
+		public async Task<IActionResult> EditQuestion([FromBody] ModifyQuestionModel paramters)
 		{
 			if (!ModelState.IsValid || string.IsNullOrEmpty(paramters.Id))
 				return Json(new { error = "invalid_model" });
@@ -179,7 +106,7 @@ namespace QuizHouse.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> AddQuestion([FromBody] ModifyQuestionParamters paramters)
+		public async Task<IActionResult> AddQuestion([FromBody] ModifyQuestionModel paramters)
 		{
 			if (!ModelState.IsValid)
 				return Json(new { error = "invalid_model" });
@@ -206,7 +133,7 @@ namespace QuizHouse.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> AddCategory([FromBody] ModifyCategoryParamters paramters)
+		public async Task<IActionResult> AddCategory([FromBody] ModifyCategoryModel paramters)
 		{
 			if (!ModelState.IsValid)
 				return Json(new { error = "invalid_model" });

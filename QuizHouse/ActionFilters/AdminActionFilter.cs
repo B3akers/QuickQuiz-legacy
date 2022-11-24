@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.IdentityModel.Tokens;
 using QuizHouse.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,12 @@ namespace QuizHouse.ActionFilters
 			if (account == null)
 			{
 				context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Login", action = "Index" })) { Permanent = false };
+				return;
+			}
+
+			if (!string.IsNullOrEmpty(account.BanReason))
+			{
+				context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "Ban" })) { Permanent = false };
 				return;
 			}
 

@@ -14,7 +14,6 @@ function acceptReport(element, reportId) {
 
     let question = {};
     question.text = questionRow.querySelector('h4').innerText;
-    question.image = questionRow.querySelector('img').getAttribute('src');
     question.categories = [];
     question.answers = [];
 
@@ -39,10 +38,6 @@ function acceptReport(element, reportId) {
             '<div class="form-group">' +
             '<label>Treść</label>' +
             '<input type="text" name="label" class="name form-control" value="' + escapeValue(question.text) + '" required />' +
-            '</div>' +
-            '<div class="form-group">' +
-            '<label>Obraz</label>' +
-            '<input type="text" name="image" class="name form-control" value="' + escapeValue(question.image) + '" />' +
             '</div>' +
             '<div class="form-group">' +
             '<label>Prawidłowa odpowiedź</label>' +
@@ -85,7 +80,6 @@ function acceptReport(element, reportId) {
                     const content = this.$content[0];
 
                     const label = content.querySelector('input[name="label"]').value.trim();
-                    const image = content.querySelector('input[name="image"]').value.trim();
                     const correctAnswer = content.querySelector('select[name="correctAnswer"]').value.trim();
                     const answer0 = content.querySelector('input[name="answer0"]').value.trim();
                     const answer1 = content.querySelector('input[name="answer1"]').value.trim();
@@ -100,7 +94,7 @@ function acceptReport(element, reportId) {
                         return false;
                     }
 
-                    const data = { label: label, image: image, correctAnswer: parseInt(correctAnswer), answer0: answer0, answer1: answer1, answer2: answer2, answer3: answer3, selectedCategories: selectedCategories };
+                    const data = { label: label, correctAnswer: parseInt(correctAnswer), answer0: answer0, answer1: answer1, answer2: answer2, answer3: answer3, selectedCategories: selectedCategories };
                     data.id = content.querySelector('input[name="id"]').value.trim();
 
                     makePostRequest(acceptReportUrl, data)

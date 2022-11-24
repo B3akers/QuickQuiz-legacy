@@ -19,6 +19,7 @@ namespace QuizHouse.Services
 		private readonly IMongoCollection<PasswordResetDTO> _passwordResetsCollection;
 		private readonly IMongoCollection<GameDTO> _gamesCollection;
 		private readonly IMongoCollection<QuestionReportDTO> _questionReportsCollection;
+		private readonly IMongoCollection<QuestionRequestDTO> _questionRequestsCollection;
 
 		private MongoClient _client;
 
@@ -35,11 +36,17 @@ namespace QuizHouse.Services
 			_passwordResetsCollection = mongoDatabase.GetCollection<PasswordResetDTO>("password_resets");
 			_gamesCollection = mongoDatabase.GetCollection<GameDTO>("games");
 			_questionReportsCollection = mongoDatabase.GetCollection<QuestionReportDTO>("question_reports");
+			_questionRequestsCollection = mongoDatabase.GetCollection<QuestionRequestDTO>("question_requests");
 		}
 
 		public MongoClient GetMongoClient()
 		{
 			return _client;
+		}
+
+		public IMongoCollection<QuestionRequestDTO> GetQuestionRequestsCollection()
+		{
+			return _questionRequestsCollection;
 		}
 
 		public IMongoCollection<QuestionReportDTO> GetQuestionReportsCollection()

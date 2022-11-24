@@ -1,0 +1,11 @@
+﻿@{
+	ViewData["Title"] = "Zostałeś zbanowany!";
+
+	var account = Context.Items["userAccount"] as QuizHouse.Dto.AccountDTO;
+}
+
+<h1>Twojego konto zostało pernamentnie zablokowane!</h1>
+@if (account.ShowBanReason)
+{
+	<h2 class="text-center">@account.BanReason</h2>
+}

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using QuizHouse.ActionFilters;
 using QuizHouse.Dto;
+using QuizHouse.Models;
 using QuizHouse.Services;
 using QuizHouse.WebSockets;
 using System.ComponentModel.DataAnnotations;
@@ -9,14 +10,6 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Controllers
 {
-	public class SoloGameParametrs
-	{
-		[Required]
-		[MinLength(3)]
-		[MaxLength(100)]
-		public string CategoryId { get; set; }
-	}
-
 	[TypeFilter(typeof(GameActionFilter))]
 	public class GameController : Controller
 	{
@@ -36,7 +29,7 @@ namespace QuizHouse.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> SoloGame([FromBody] SoloGameParametrs parametrs)
+		public async Task<IActionResult> SoloGame([FromBody] SoloGameModel parametrs)
 		{
 			if (!ModelState.IsValid)
 				return Json(new { error = "wrong_model" });

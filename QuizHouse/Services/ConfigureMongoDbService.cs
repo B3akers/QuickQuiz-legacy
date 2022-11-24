@@ -69,6 +69,10 @@ namespace QuizHouse.Services
 
 			var question_reports = mongoDatabase.GetCollection<QuestionReportDTO>("question_reports");
 			await question_reports.Indexes.CreateOneAsync(new CreateIndexModel<QuestionReportDTO>(Builders<QuestionReportDTO>.IndexKeys.Ascending(x => x.QuestionId).Ascending(x => x.Status)));
+			await question_reports.Indexes.CreateOneAsync(new CreateIndexModel<QuestionReportDTO>(Builders<QuestionReportDTO>.IndexKeys.Ascending(x => x.Status)));
+
+			var question_requests = mongoDatabase.GetCollection<QuestionRequestDTO>("question_requests");
+			await question_requests.Indexes.CreateOneAsync(new CreateIndexModel<QuestionRequestDTO>(Builders<QuestionRequestDTO>.IndexKeys.Ascending(x => x.Result)));
 
 			var games = mongoDatabase.GetCollection<GameDTO>("games");
 			await games.UpdateManyAsync(x => x.GameStatus == GameStatusDTO.Running, Builders<GameDTO>.Update.Set(x => x.GameStatus, GameStatusDTO.Aborted));

@@ -55,9 +55,10 @@ namespace QuizHouse
 			services.AddSingleton<IPasswordHasher, PasswordHasher>();
 			services.AddSingleton<IAccountRepository, AccountRepositoryService>();
 			services.AddSingleton<IUserAuthentication, UserAuthenticationService>();
+			services.AddSingleton<ICdnUploader, GithubCdnUploaderService>();
 			services.AddHostedService<GamesTickServiceOld>();
-            services.AddHostedService<GameTickService>();
-            services.AddHostedService<DatabaseBackgroundService>();
+			services.AddHostedService<GameTickService>();
+			services.AddHostedService<DatabaseBackgroundService>();
 			services.AddHostedService<ConfigureMongoDbService>();
 
 			JsonConvert.DefaultSettings = () => new JsonSerializerSettings

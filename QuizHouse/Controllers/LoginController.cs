@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using QuizHouse.ActionFilters;
 using QuizHouse.Dto;
 using QuizHouse.Interfaces;
+using QuizHouse.Models;
 using QuizHouse.Services;
 using QuizHouse.Utility;
 using System;
@@ -18,48 +19,6 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Controllers
 {
-	public class RegisterAccountParametrs
-	{
-		[Required]
-		[StringLength(25)]
-		[MinLength(3)]
-		[RegularExpression("^[a-zA-Z][a-zA-Z0-9_]*(?:\\ [a-zA-Z0-9]+)?$")]
-		public string Username { get; set; }
-
-		[Required]
-		[StringLength(64)]
-		[MinLength(6)]
-		public string Password { get; set; }
-
-		[Required]
-		[EmailAddress]
-		[StringLength(64)]
-		public string Email { get; set; }
-	}
-
-	public class RequestPasswordResetParametrs
-	{
-		[Required]
-		[EmailAddress]
-		[StringLength(64)]
-		public string Email { get; set; }
-	}
-
-	public class LoginAccountParametrs
-	{
-		[Required]
-		[StringLength(64)]
-		[EmailAddress]
-		public string Email { get; set; }
-
-		[Required]
-		[StringLength(64)]
-		[MinLength(6)]
-		public string Password { get; set; }
-
-		public bool RememberMe { get; set; }
-	}
-
 	[TypeFilter(typeof(LoginActionFilter))]
 	public class LoginController : Controller
 	{
@@ -190,7 +149,7 @@ namespace QuizHouse.Controllers
 
 		[ValidateAntiForgeryToken]
 		[HttpPost]
-		public async Task<IActionResult> RequestPasswordReset([FromBody] RequestPasswordResetParametrs model)
+		public async Task<IActionResult> RequestPasswordReset([FromBody] RequestPasswordResetModel model)
 		{
 			if (!ModelState.IsValid)
 				return Json(new { error = "invalid_model_register" });
@@ -211,7 +170,7 @@ namespace QuizHouse.Controllers
 
 		[ValidateAntiForgeryToken]
 		[HttpPost]
-		public async Task<IActionResult> LoginAccount([FromBody] LoginAccountParametrs model)
+		public async Task<IActionResult> LoginAccount([FromBody] LoginAccountModel model)
 		{
 			if (!ModelState.IsValid)
 				return Json(new { error = "invalid_model_register" });
@@ -228,7 +187,7 @@ namespace QuizHouse.Controllers
 
 		[ValidateAntiForgeryToken]
 		[HttpPost]
-		public async Task<IActionResult> RegisterAccount([FromBody] RegisterAccountParametrs model)
+		public async Task<IActionResult> RegisterAccount([FromBody] RegisterAccountModel model)
 		{
 			model.Email = model.Email.Trim();
 

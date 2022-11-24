@@ -12,6 +12,9 @@
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
     });
+    if (response.status > 299 || response.status < 200) {
+        return { errorCode: response.status, text: await response.text(), error: 'status_not_success' };
+    }
     return response.json();
 }
 
@@ -27,6 +30,9 @@ async function makeGetRequest(url = '') {
         },
         referrerPolicy: 'no-referrer'
     });
+    if (response.status > 299 || response.status < 200) {
+        return { errorCode: response.status, text: await response.text(), error: 'status_not_success' };
+    }
     return response.json();
 }
 
@@ -96,6 +102,14 @@ function translateCode(code) {
             return 'Zgłoszenie zostało odrzucone!';
         case 'report_accepted':
             return 'Zgłoszenie zostało zaakceptowane!';
+        case 'preferences_setted':
+            return 'Preferencje zostały zmienione!';
+        case 'status_not_success':
+            return 'Zapytanie nie powiodło się!';
+        case 'image_too_large':
+            return 'Obraz który próbujesz przesłać jest zbyt duży, maksymalny rozmiar to 1MB';
+        case 'question_request_added':
+            return 'Twoje pytanie zostało dodane, zanim ukaże się społeczności zostanie sprawdzone przez moderatorów';
     }
 
     return code;

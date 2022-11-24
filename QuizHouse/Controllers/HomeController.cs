@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using QuizHouse.ActionFilters;
 using QuizHouse.Dto;
 using QuizHouse.Interfaces;
@@ -8,46 +10,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace QuizHouse.Controllers
 {
-	public class ChangePasswordParametrs
-	{
-		[Required]
-		[StringLength(64)]
-		[MinLength(6)]
-		public string CurrentPassword { get; set; }
-
-		[Required]
-		[StringLength(64)]
-		[MinLength(6)]
-		public string Password { get; set; }
-	}
-
-	public class RemoveAccountConnectionParametrs
-	{
-		[Required]
-		[StringLength(64)]
-		[MinLength(3)]
-		public string ConnectionType { get; set; }
-	}
-
-	public class ChangeUsernameParametrs
-	{
-		[Required]
-		[StringLength(64)]
-		[MinLength(6)]
-		public string CurrentPassword { get; set; }
-
-		[Required]
-		[StringLength(25)]
-		[MinLength(3)]
-		[RegularExpression("^[a-zA-Z][a-zA-Z0-9_]*(?:\\ [a-zA-Z0-9]+)?$")]
-		public string Username { get; set; }
-	}
-
-	[TypeFilter(typeof(HomeActionFilter))]
+    [TypeFilter(typeof(HomeActionFilter))]
 	public class HomeController : Controller
 	{
 		private readonly IUserAuthentication _userAuthentication;
@@ -68,6 +36,11 @@ namespace QuizHouse.Controllers
 			return View();
 		}
 
+		public IActionResult Ban()
+		{
+			return View();
+		}
+
 		public async Task<IActionResult> Index()
 		{
 			var model = new HomeIndexModel();
@@ -78,7 +51,22 @@ namespace QuizHouse.Controllers
 
 		[ValidateAntiForgeryToken]
 		[HttpPost]
-		public async Task<IActionResult> RemoveAccountConnection([FromBody] RemoveAccountConnectionParametrs parametrs)
+		public async Task<IActionResult> SetUserPreferences([FromBody] SetUserPreferencesModel parametrs)
+		{
+			if (!ModelState.IsValid)
+				return Json(new { error = "invalid_model" });
+
+			var accounts = _databaseService.GetAccountsCollection();
+			var account = HttpContext.Items["userAccount"] as AccountDTO;
+
+			await accounts.UpdateOneAsync(x => x.Id == account.Id, Builders<AccountDTO>.Update.Set(x => x.StreamerMode, parametrs.StreamerMode).Set(x => x.UserColor, parametrs.Color));
+
+			return Json(new { success = "preferences_setted" });
+		}
+
+		[ValidateAntiForgeryToken]
+		[HttpPost]
+		public async Task<IActionResult> RemoveAccountConnection([FromBody] RemoveAccountConnectionModel parametrs)
 		{
 			if (!ModelState.IsValid)
 				return Json(new { error = "invalid_model" });
@@ -91,7 +79,7 @@ namespace QuizHouse.Controllers
 
 		[ValidateAntiForgeryToken]
 		[HttpPost]
-		public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameParametrs parametrs)
+		public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameModel parametrs)
 		{
 			if (!ModelState.IsValid)
 				return Json(new { error = "invalid_model" });
@@ -111,7 +99,7 @@ namespace QuizHouse.Controllers
 
 		[ValidateAntiForgeryToken]
 		[HttpPost]
-		public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordParametrs parametrs)
+		public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel parametrs)
 		{
 			if (!ModelState.IsValid)
 				return Json(new { error = "invalid_model" });

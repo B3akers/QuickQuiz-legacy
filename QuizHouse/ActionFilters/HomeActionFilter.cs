@@ -34,6 +34,24 @@ namespace QuizHouse.ActionFilters
 			context.HttpContext.Items["userAccount"] = account;
 
 			var action = (string)context.HttpContext.GetRouteValue("action");
+			if (action == "Ban")
+			{
+				if (!string.IsNullOrEmpty(account.BanReason))
+				{
+					await next();
+					return;
+				}
+
+				context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "Index" })) { Permanent = false };
+				return;
+			}
+
+			if (!string.IsNullOrEmpty(account.BanReason))
+			{
+				context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "Ban" })) { Permanent = false };
+				return;
+			}
+
 			if (action != "Logout" &&
 				action != "ResendEmail")
 			{

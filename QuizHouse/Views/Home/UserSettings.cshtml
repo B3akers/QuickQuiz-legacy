@@ -56,6 +56,24 @@
 					</div>
 				</form>
 			</div>
+			<div class="col m-3 border border-secondary border-3 rounded">
+				<h5>Twoje preferencje</h5>
+				<form class="needs-validation p-2" novalidate>
+					<div class="mb-1">
+						<label for="usernameColor">Twój kolor (widoczny tylko dla ciebie)</label>
+						<input type="color" class="form-control" value="@(account.UserColor == null ? "#e80d7b" : account.UserColor)" id="usernameColor" required>
+					</div>
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" value="" id="streamerMode" @(account.StreamerMode ? "checked" : "")>
+						<label class="form-check-label text-white" for="streamerMode">
+							Streamer mode (pokazuje odpowiedzi na sam koniec)
+						</label>
+					</div>
+					<div class="mb-1">
+						<button type="submit" data-buttontype="preferences" class="btn btn-primary mt-2">Zastostuj zmiany</button>
+					</div>
+				</form>
+			</div>
 		</div>
 
 		<div class="row m-3 p-3 border border-secondary border-3 rounded">
@@ -112,6 +130,7 @@
 	<script>
 		const changePasswordUrl = '@Url.Action("ChangePassword", "Home")';
 		const changeUsernameUrl = '@Url.Action("ChangeUsername", "Home")';
+		const setPreferencesUrl = '@Url.Action("SetUserPreferences", "Home")';	
 		const removeAccountConnectionUrl = '@Url.Action("RemoveAccountConnection", "Home")';
 	</script>
 	<script src="~/js/common.js"></script>
