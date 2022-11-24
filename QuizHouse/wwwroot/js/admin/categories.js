@@ -89,31 +89,40 @@ function modifyCategory(create, categoryId) {
             '<label>Kolor</label>' +
             '<input type="color" name="color" class="name form-control" value="' + (create ? '' : category.color) + '" required />' +
             '</div>' +
-            '<div class="form-group">' +
-            '<label>Logotyp</label>' +
-            '<input type="text" name="icon" class="name form-control" value="' + (create ? '' : escapeValue(category.icon)) + '" required />' +
-            '</div>' +
+            (create ?
+                ('<div class="mb-3">' +
+                    '<label for="formFile" class="form-label">Logotyp</label>' +
+                    '<input class="form-control" accept="image/jpeg, image/png" type="file" name="icon">' +
+                    '</div>')
+                : ('<div class="form-group">' +
+                    '<label>Logotyp</label>' +
+                    '<input type="text" name="icon" class="name form-control" value="' + escapeValue(category.icon) + '" required />' +
+                    '</div>')) +
+
             (create ? '' : `<input type="hidden" name="id" value="${categoryId}" />`) +
             '</form>',
         theme: 'dark',
         buttons: {
             formSubmit: {
                 text: create ? 'Dodaj' : 'Modyfikuj',
-                action: function () {
+                action: async function () {
                     const content = this.$content[0];
 
                     const label = content.querySelector('input[name="label"]').value.trim();
                     const color = content.querySelector('input[name="color"]').value.trim();
-                    const icon = content.querySelector('input[name="icon"]').value.trim();
+                    const icon = create ? content.querySelector('input[name="icon"]').files[0] : content.querySelector('input[name="icon"]').value.trim();
 
                     if (!label || !color || !icon) {
                         toastr.error(translateCode('invalid_model'));
                         return false;
                     }
 
-                    const data = { label: label, color: color, icon: icon };
+                    const data = { label: label, color: color };
                     if (!create) {
+                        data.icon = icon;
                         data.id = content.querySelector('input[name="id"]').value.trim();
+                    } else {
+                        data.iconBase64 = await toBase64(icon);
                     }
 
                     makePostRequest(create ? addCategoryUrl : editCategoryUrl, data)

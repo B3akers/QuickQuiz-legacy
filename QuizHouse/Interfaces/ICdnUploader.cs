@@ -4,6 +4,6 @@ namespace QuizHouse.Interfaces
 {
 	public interface ICdnUploader
 	{
-		public Task<string> UploadFileAsync(string filepath);
+		public Task<string> UploadFileAsync(string urlFilePath);
 	}
 }

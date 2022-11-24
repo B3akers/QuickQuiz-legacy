@@ -108,6 +108,7 @@ namespace QuizHouse.Game
 							currentQuestion.Id,
 							currentQuestion.Text,
 							currentQuestion.Image,
+							currentQuestion.Author,
 							QuestionStartTime = LastTakenAction,
 							GameSettings.QuestionAnswerTime,
 							currentQuestion.Answers
@@ -317,7 +318,7 @@ namespace QuizHouse.Game
 			switch (CurrentGameState)
 			{
 				case GameState.PrepareForQuestions:
-					await PrepareForQuestionsStageTick(databaseService);
+					await PrepareForQuestionsStageTick();
 					break;
 				case GameState.QuestionAnswering:
 					await QuestionAnsweringStageTick();
@@ -494,7 +495,7 @@ namespace QuizHouse.Game
 			}
 		}
 
-		private async Task PrepareForQuestionsStageTick(DatabaseService databaseService)
+		private async Task PrepareForQuestionsStageTick()
 		{
 			var currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 			if (currentTime - LastTakenAction < GameConstSettings.PREPARE_FOR_QUESTION_TIME)
@@ -516,6 +517,7 @@ namespace QuizHouse.Game
 					question.Id,
 					question.Text,
 					question.Image,
+					question.Author,
 					QuestionStartTime = LastTakenAction,
 					GameSettings.QuestionAnswerTime,
 					question.Answers

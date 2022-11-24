@@ -197,7 +197,7 @@ function loadTable() {
                     }
 
                     if (type === "display") {
-                        return `Here author profile link`; //TODO
+                        return `<a class="link-info" target="_blank" href="${userProfileUrl}/${data}">Autor</a>`;
                     }
                     return data;
                 },

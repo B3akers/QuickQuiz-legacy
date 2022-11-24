@@ -1,4 +1,11 @@
-﻿function deleteRecord(url, table, recordId) {
+﻿const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+function deleteRecord(url, table, recordId) {
     $.confirm({
         title: 'Potwierdź usunięcie',
         content: 'Czy na pewno chcesz usuńać ten rekord?',

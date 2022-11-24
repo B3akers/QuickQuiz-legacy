@@ -114,12 +114,8 @@ namespace QuizHouse.Services
 					await gameBase.FinishGame(gameBase.GameStatus != GameStatusDTO.Finished);
 					await games.ReplaceOneAsync(x => x.Id == gameBase.Id, gameBase);
 
-					List<UpdateOneModel<CategoryDTO>> bulk = new List<UpdateOneModel<CategoryDTO>>();
-					foreach (var category in gameBase.Categories)
-						bulk.Add(new UpdateOneModel<CategoryDTO>(Builders<CategoryDTO>.Filter.Eq(x => x.Id, category), Builders<CategoryDTO>.Update.Inc(x => x.Popularity, 1ul)));
-
 					var categories = _databaseService.GetCategoryCollection();
-					await categories.BulkWriteAsync(bulk);
+					await categories.UpdateManyAsync(Builders<CategoryDTO>.Filter.In(x => x.Id, gameBase.Categories), Builders<CategoryDTO>.Update.Inc(x => x.Popularity, 1ul));
 				}
 			}
 		}

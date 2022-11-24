@@ -26,7 +26,7 @@ namespace QuizHouse.Controllers
 		}
 
 		[HttpGet]
-		[ResponseCache(Duration = 3600)]
+		[ResponseCache(Duration = 600)]
 		public async Task<IActionResult> GetCategories()
 		{
 			return Json(await _databaseService.GetCategoriesAsync());

@@ -45,6 +45,7 @@ namespace QuizHouse.Utility
 		public string Name { get; set; }
 		public BsonType Type { get; set; }
 		public bool IsEnumerable { get; set; }
+		public bool UseRegex { get; set; }
 	}
 
 	public class DatatablesPagingDefinition<T>
@@ -53,13 +54,14 @@ namespace QuizHouse.Utility
 		private FindOptions<T> _findOptions;
 		private FilterDefinition<T> _filter;
 
-		private DatatableFiledInfo _globalSearchField;
 		private List<DatatableFiledInfo> _allowedFilters;
+		private List<DatatableFiledInfo> _globalSearchFields;
 
 		public DatatablesPagingDefinition(DataTableProcessParametrs parametrs)
 		{
 			_parametrs = parametrs;
 			_allowedFilters = new List<DatatableFiledInfo>();
+			_globalSearchFields = new List<DatatableFiledInfo>();
 			_findOptions = new FindOptions<T>() { Skip = parametrs.Start, Limit = parametrs.Length };
 			_filter = Builders<T>.Filter.Empty;
 		}
@@ -72,6 +74,12 @@ namespace QuizHouse.Utility
 		public FilterDefinition<T> GetFilter()
 		{
 			return _filter;
+		}
+
+		public DatatablesPagingDefinition<T> IgnoreCaseSerach()
+		{
+			_findOptions.Collation = new Collation("en", strength: CollationStrength.Secondary);
+			return this;
 		}
 
 		public DatatablesPagingDefinition<T> ApplySort()
@@ -93,10 +101,11 @@ namespace QuizHouse.Utility
 			return this;
 		}
 
-		public DatatablesPagingDefinition<T> SetGlobalFilterField(Expression<Func<T, object>> field)
+		public DatatablesPagingDefinition<T> AddGlobalFilterField(Expression<Func<T, object>> field, bool regex)
 		{
-			_globalSearchField = GetFieldInfo(field);
-
+			var result = GetFieldInfo(field);
+			result.UseRegex = regex;
+			_globalSearchFields.Add(result);
 			return this;
 		}
 
@@ -108,6 +117,8 @@ namespace QuizHouse.Utility
 
 		public DatatablesPagingDefinition<T> ApplyColumnFilter()
 		{
+			FilterDefinition<T> columnFilter = null;
+
 			foreach (var column in _parametrs.Columns)
 			{
 				if (column.Search == null || string.IsNullOrEmpty(column.Search.Value)) continue;
@@ -115,20 +126,37 @@ namespace QuizHouse.Utility
 				var fildInfo = _allowedFilters.FirstOrDefault(x => x.Name == name);
 				if (fildInfo == null) continue;
 
-				AddToFilter(fildInfo, column.Search.Value);
+				var filter = CreateFilter(fildInfo, column.Search.Value);
+				if (columnFilter == null)
+					columnFilter = filter;
+				else
+					columnFilter &= filter;
 			}
 
+			ApplyToFilterChain(columnFilter);
 			return this;
 		}
 
 		public DatatablesPagingDefinition<T> ApplyGlobalFilter()
 		{
-			if (_globalSearchField != null && _parametrs.Search != null && !string.IsNullOrEmpty(_parametrs.Search.Value))
+			FilterDefinition<T> globalFilter = null;
+			if (_parametrs.Search != null && !string.IsNullOrEmpty(_parametrs.Search.Value))
 			{
-				AddToFilter(_globalSearchField, _parametrs.Search.Value);
+				foreach (var serach in _globalSearchFields)
+				{
+					var filter = CreateFilter(serach, _parametrs.Search.Value);
+					if (globalFilter == null)
+						globalFilter = filter;
+					else
+						globalFilter |= filter;
+				}
 			}
+
+			ApplyToFilterChain(globalFilter);
+
 			return this;
 		}
+
 		public async Task<(List<T>, long, long)> Execute(IMongoCollection<T> collection)
 		{
 			var totalRecords = await collection.EstimatedDocumentCountAsync();
@@ -156,28 +184,35 @@ namespace QuizHouse.Utility
 			return dataName;
 		}
 
-		private void AddToFilter(DatatableFiledInfo info, string value)
+		private void ApplyToFilterChain(FilterDefinition<T> filter)
+		{
+			if (filter != null)
+			{
+				if (_filter == null)
+					_filter = filter;
+				else
+					_filter &= filter;
+			}
+		}
+
+		private FilterDefinition<T> CreateFilter(DatatableFiledInfo info, string value)
 		{
 			if (info == null || string.IsNullOrEmpty(value))
-				return;
+				return null;
 
 			if (info.Type == BsonType.String)
 			{
-				if (_filter == Builders<T>.Filter.Empty)
-					_filter = Builders<T>.Filter.Regex(info.Name, new BsonRegularExpression("/" + value + "/i"));
-				else
-					_filter &= Builders<T>.Filter.Regex(info.Name, new BsonRegularExpression("/" + value + "/i"));
+				if (info.UseRegex)
+					return Builders<T>.Filter.Regex(info.Name, new BsonRegularExpression("/" + value + "/i"));
+				return Builders<T>.Filter.Eq(info.Name, value);
 			}
 			else if (info.Type == BsonType.ObjectId)
 			{
 				if (ObjectId.TryParse(value, out var objId))
-				{
-					if (_filter == Builders<T>.Filter.Empty)
-						_filter = Builders<T>.Filter.Eq(info.Name, objId);
-					else
-						_filter &= Builders<T>.Filter.Eq(info.Name, objId);
-				}
+					return Builders<T>.Filter.Eq(info.Name, objId);
 			}
+
+			return null;
 		}
 
 		private DatatableFiledInfo GetFieldInfo(Expression<Func<T, object>> field)

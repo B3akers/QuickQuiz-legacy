@@ -1,0 +1,50 @@
+﻿@{
+	ViewData["Title"] = "Panel admina - Użytkownicy";
+	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+@section Stylesheets {
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+}
+
+@{
+	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");
+}
+
+
+<div class="container mb-5">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="row m-3 p-3 border border-secondary border-3 rounded">
+				<h5 class="text-center">Użytkownicy</h5>
+				<table id="accountsTable" class="table-dark table-striped">
+					<thead>
+						<tr>
+							<th>Id</th>
+							<th>Nazwa</th>
+							<th>Email</th>
+							<th>Mod</th>
+							<th>Admin</th>
+							<th>Data założenia</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</main>
+</div>
+
+@section Scripts {
+	<script>
+		const getAccountsUrl = '@Url.Action("GetAccounts", "Admin")';
+		const accountProfileAdminUrl = '@Url.Action("Profile", "Admin")';
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+	<script src="~/js/common.js"></script>
+	<script src="~/js/admin/common.js"></script>
+	<script src="~/js/admin/accounts.js"></script>
+}

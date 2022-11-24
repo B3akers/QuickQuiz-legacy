@@ -64,6 +64,12 @@
 						<input type="color" class="form-control" value="@(account.UserColor == null ? "#e80d7b" : account.UserColor)" id="usernameColor" required>
 					</div>
 					<div class="form-check">
+						<input class="form-check-input" type="checkbox" value="" id="privateProfil" @(account.ProfilPrivate ? "checked" : "")>
+						<label class="form-check-label text-white" for="privateProfil">
+							Profil prywatny
+						</label>
+					</div>
+					<div class="form-check">
 						<input class="form-check-input" type="checkbox" value="" id="streamerMode" @(account.StreamerMode ? "checked" : "")>
 						<label class="form-check-label text-white" for="streamerMode">
 							Streamer mode (pokazuje odpowiedzi na sam koniec)

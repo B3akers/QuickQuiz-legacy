@@ -236,6 +236,16 @@ function initWebsocketConnection() {
 
     webSocketClient.onclose = function (event) {
         clearInterval(keepAliveWebSocketInterval);
+
+        if (event.code == 1006) {
+            initWebsocketConnection();
+            return;
+        }
+
+        if (event.code == 3001) {
+            showContainerByName('gameDisconnectContainer');
+            document.getElementById('gameDisconnectContainer').querySelector('h1').innerText = 'Rozłączono! Nowe połączenie z tego samego konta!';
+        }
     };
 }
 
@@ -262,16 +272,16 @@ function reportQuestion() {
         content: '' +
             '<form action="" class="formName">' +
             '<div class="form-check">' +
-            '<input class="form-check-input" type="radio" data-report-reason="0" name="reportReason" checked><label class="form-check-label">Nieaktualne pytanie</label>' +
+            '<input class="form-check-input" type="radio" data-report-reason="0" id="reportReason0" name="reportReason" checked><label class="form-check-label" for="reportReason0">Nieaktualne pytanie</label>' +
             '</div>' +
             '<div class="form-check">' +
-            '<input class="form-check-input" type="radio" data-report-reason="1" name="reportReason"><label class="form-check-label">Zła kategoria</label>' +
+            '<input class="form-check-input" type="radio" data-report-reason="1" id="reportReason1" name="reportReason"><label class="form-check-label" for="reportReason1">Zła kategoria</label>' +
             '</div>' +
             '<div class="form-check">' +
-            '<input class="form-check-input" type="radio" data-report-reason="2" name="reportReason"><label class="form-check-label">Zła odpowiedź</label>' +
+            '<input class="form-check-input" type="radio" data-report-reason="2" id="reportReason2" name="reportReason"><label class="form-check-label" for="reportReason2">Zła odpowiedź</label>' +
             '</div>' +
             '<div class="form-check">' +
-            '<input class="form-check-input" type="radio" data-report-reason="3" name="reportReason"><label class="form-check-label">Inne</label>' +
+            '<input class="form-check-input" type="radio" data-report-reason="3" id="reportReason3" name="reportReason"><label class="form-check-label" for="reportReason3">Inne</label>' +
             '</div>' +
             `<input type="hidden" name="id" value="${gameInfo.currentQuestionId}" />` +
             '</form>',
@@ -563,6 +573,14 @@ function setupQuestionContainer(questionData) {
         imageDiv.querySelector('img').src = getFullImg(questionData.image);
     } else {
         imageDiv.setAttribute('disabled', '');
+    }
+
+    const authorElement = container.querySelector('a');
+    if (questionData.author) {
+        authorElement.setAttribute('href', userProfileUrl + '/' + questionData.author);
+        authorElement.parentElement.classList.remove('d-none');
+    } else {
+        authorElement.parentElement.classList.add('d-none');
     }
 
     const time = container.querySelector('.progress-bar');

@@ -103,6 +103,9 @@ namespace QuizHouse.Controllers
 			var question = new QuestionDTO() { Text = paramters.Label, Answers = new List<string>() { paramters.Answer0, paramters.Answer1, paramters.Answer2, paramters.Answer3 }, CorrectAnswer = paramters.CorrectAnswer, Image = request.Image, Categories = paramters.SelectedCategories, Author = request.Author };
 			await questions.InsertOneAsync(question);
 
+			var categoriesCollection = _databaseService.GetCategoryCollection();
+			await categoriesCollection.UpdateManyAsync(Builders<CategoryDTO>.Filter.In(x => x.Id, question.Categories), Builders<CategoryDTO>.Update.Inc(x => x.QuestionCount, 1));
+
 			var account = HttpContext.Items["userAccount"] as AccountDTO;
 			var accounts = _databaseService.GetAccountsCollection();
 			await requests.UpdateOneAsync(x => x.Id == request.Id, Builders<QuestionRequestDTO>.Update.Set(x => x.Result, QuestionRequestResult.Accepted).Set(x => x.ModeratorId, account.Id).Set(x => x.QuestionId, question.Id));

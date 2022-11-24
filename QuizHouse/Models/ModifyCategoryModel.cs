@@ -16,9 +16,10 @@ namespace QuizHouse.Models
 		[RegularExpression("^#(?:[0-9a-fA-F]{3}){1,2}$")]
 		public string Color { get; set; }
 
-		[Required]
 		[MinLength(3)]
 		[MaxLength(80)]
 		public string Icon { get; set; }
+
+		public string IconBase64 { get; set; }
 	};
 }

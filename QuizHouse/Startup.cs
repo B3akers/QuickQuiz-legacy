@@ -55,7 +55,7 @@ namespace QuizHouse
 			services.AddSingleton<IPasswordHasher, PasswordHasher>();
 			services.AddSingleton<IAccountRepository, AccountRepositoryService>();
 			services.AddSingleton<IUserAuthentication, UserAuthenticationService>();
-			services.AddSingleton<ICdnUploader, GithubCdnUploaderService>();
+			services.AddSingleton<ICdnUploader, FileCdnUploaderService>();
 			services.AddHostedService<GamesTickServiceOld>();
 			services.AddHostedService<GameTickService>();
 			services.AddHostedService<DatabaseBackgroundService>();

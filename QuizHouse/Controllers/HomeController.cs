@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using QuizHouse.ActionFilters;
 using QuizHouse.Dto;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace QuizHouse.Controllers
 {
-    [TypeFilter(typeof(HomeActionFilter))]
+	[TypeFilter(typeof(HomeActionFilter))]
 	public class HomeController : Controller
 	{
 		private readonly IUserAuthentication _userAuthentication;
@@ -49,6 +50,30 @@ namespace QuizHouse.Controllers
 			return View(model);
 		}
 
+		[HttpGet("Home/Profile/{profileId}")]
+		public async Task<IActionResult> Profile(string profileId)
+		{
+			var model = new HomeProfileModel();
+
+			var visitorAccount = await _accountRepository.GetAccount(profileId);
+			if (visitorAccount == null)
+			{
+				model.AccountNotFound = true;
+				return View(model);
+			}
+
+			var account = HttpContext.Items["userAccount"] as AccountDTO;
+			if (visitorAccount.ProfilPrivate && !account.IsAdmin && !account.IsModerator)
+			{
+				model.AccountPrivate = true;
+				return View(model);
+			}
+
+			model.Account = visitorAccount;
+
+			return View(model);
+		}
+
 		[ValidateAntiForgeryToken]
 		[HttpPost]
 		public async Task<IActionResult> SetUserPreferences([FromBody] SetUserPreferencesModel parametrs)
@@ -59,7 +84,7 @@ namespace QuizHouse.Controllers
 			var accounts = _databaseService.GetAccountsCollection();
 			var account = HttpContext.Items["userAccount"] as AccountDTO;
 
-			await accounts.UpdateOneAsync(x => x.Id == account.Id, Builders<AccountDTO>.Update.Set(x => x.StreamerMode, parametrs.StreamerMode).Set(x => x.UserColor, parametrs.Color));
+			await accounts.UpdateOneAsync(x => x.Id == account.Id, Builders<AccountDTO>.Update.Set(x => x.StreamerMode, parametrs.StreamerMode).Set(x => x.ProfilPrivate, parametrs.PrivateProfil).Set(x => x.UserColor, parametrs.Color));
 
 			return Json(new { success = "preferences_setted" });
 		}

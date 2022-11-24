@@ -49,7 +49,7 @@ function changeUsernameSubmit() {
 }
 
 function setPreferencesSubmit() {
-    makePostRequest(setPreferencesUrl, { color: document.getElementById('usernameColor').value, streamerMode: document.getElementById('streamerMode').checked })
+    makePostRequest(setPreferencesUrl, { color: document.getElementById('usernameColor').value, streamerMode: document.getElementById('streamerMode').checked, privateProfil: document.getElementById('privateProfil').checked })
         .then(data => {
             if (data.error) {
                 toastr.error(translateCode(data.error));

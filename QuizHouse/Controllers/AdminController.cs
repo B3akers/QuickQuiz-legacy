@@ -3,6 +3,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using QuizHouse.ActionFilters;
 using QuizHouse.Dto;
+using QuizHouse.Interfaces;
 using QuizHouse.Models;
 using QuizHouse.Services;
 using QuizHouse.Utility;
@@ -10,9 +11,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static System.Formats.Asn1.AsnWriter;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace QuizHouse.Controllers
 {
@@ -20,9 +23,14 @@ namespace QuizHouse.Controllers
 	public class AdminController : Controller
 	{
 		private readonly DatabaseService _databaseService;
-		public AdminController(DatabaseService databaseService)
+		private readonly IAccountRepository _accountRepository;
+		private readonly ICdnUploader _cdnUploader;
+
+		public AdminController(DatabaseService databaseService, ICdnUploader cdnUploader, IAccountRepository accountRepository)
 		{
 			_databaseService = databaseService;
+			_cdnUploader = cdnUploader;
+			_accountRepository = accountRepository;
 		}
 
 		public IActionResult Index()
@@ -38,6 +46,19 @@ namespace QuizHouse.Controllers
 		public IActionResult Questions()
 		{
 			return View();
+		}
+
+		public IActionResult Accounts()
+		{
+			return View();
+		}
+
+		[HttpGet("Admin/Profile/{profileId}")]
+		public async Task<IActionResult> Profile(string profileId)
+		{
+			var model = new AdminProfileModel();
+			model.Account = await _accountRepository.GetAccount(profileId);
+			return View(model);
 		}
 
 		[HttpPost]
@@ -135,10 +156,23 @@ namespace QuizHouse.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> AddCategory([FromBody] ModifyCategoryModel paramters)
 		{
-			if (!ModelState.IsValid)
+			if (!ModelState.IsValid || string.IsNullOrEmpty(paramters.IconBase64))
 				return Json(new { error = "invalid_model" });
 
-			var category = new CategoryDTO() { Color = paramters.Color, Label = paramters.Label, Icon = paramters.Icon };
+			var startIndex = paramters.IconBase64.IndexOf("base64,", StringComparison.OrdinalIgnoreCase);
+			if (startIndex == -1)
+				return Json(new { error = "invalid_model" });
+
+			var ext = "." + paramters.IconBase64.Substring(paramters.IconBase64.IndexOf('/') + 1, 3);
+			paramters.IconBase64 = paramters.IconBase64.Substring(startIndex + 7);
+
+			var randomName = Path.GetRandomFileName();
+			var filePath = Path.Combine("wwwroot", "uploads", randomName + ext);
+
+			await System.IO.File.WriteAllBytesAsync(filePath, Convert.FromBase64String(paramters.IconBase64));
+			var icon = await _cdnUploader.UploadFileAsync($"/uploads/{randomName + ext}");
+
+			var category = new CategoryDTO() { Color = paramters.Color, Label = paramters.Label, Icon = icon };
 			var catagories = _databaseService.GetCategoryCollection();
 
 			await catagories.InsertOneAsync(category);
@@ -180,11 +214,22 @@ namespace QuizHouse.Controllers
 		}
 
 		[HttpPost]
+		public async Task<IActionResult> GetAccounts([FromBody] DataTableProcessParametrs parametrs)
+		{
+			var accounts = _databaseService.GetAccountsCollection();
+
+			var datatableDef = Datatables.StartPaging<AccountDTO>(parametrs).AddGlobalFilterField(x => x.Username, false).AddGlobalFilterField(x => x.Email, false).IgnoreCaseSerach().ApplyGlobalFilter().SortDescendingById();
+			var result = await datatableDef.Execute(accounts);
+
+			return Json(new { parametrs.Draw, RecordsFiltered = result.Item2, RecordsTotal = result.Item3, data = result.Item1.Select(x => new { x.Id, x.Username, x.Email, x.CreationTime, x.IsAdmin, x.IsModerator }) });
+		}
+
+		[HttpPost]
 		public async Task<IActionResult> GetQuestions([FromBody] DataTableProcessParametrs parametrs)
 		{
 			var questions = _databaseService.GetQuestionsCollection();
 
-			var datatableDef = Datatables.StartPaging<QuestionDTO>(parametrs).SetGlobalFilterField(x => x.Id).AllowFilterFor(x => x.Categories).ApplyColumnFilter().ApplyGlobalFilter().SortDescendingById();
+			var datatableDef = Datatables.StartPaging<QuestionDTO>(parametrs).AddGlobalFilterField(x => x.Id, false).AllowFilterFor(x => x.Categories).ApplyColumnFilter().ApplyGlobalFilter().SortDescendingById();
 			var result = await datatableDef.Execute(questions);
 
 			return Json(new { parametrs.Draw, RecordsFiltered = result.Item2, RecordsTotal = result.Item3, data = result.Item1 });
@@ -196,7 +241,7 @@ namespace QuizHouse.Controllers
 		{
 			var categories = _databaseService.GetCategoryCollection();
 
-			var datatableDef = Datatables.StartPaging<CategoryDTO>(parametrs).SetGlobalFilterField(x => x.Label).ApplyGlobalFilter().ApplySort().SortDescendingById();
+			var datatableDef = Datatables.StartPaging<CategoryDTO>(parametrs).AddGlobalFilterField(x => x.Label, true).ApplyGlobalFilter().ApplySort().SortDescendingById();
 			var result = await datatableDef.Execute(categories);
 
 			return Json(new { parametrs.Draw, RecordsFiltered = result.Item2, RecordsTotal = result.Item3, data = result.Item1 });
