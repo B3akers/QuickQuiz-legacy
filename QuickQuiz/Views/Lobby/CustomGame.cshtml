@@ -1,0 +1,27 @@
+﻿@{
+	ViewData["Title"] = "Gra niestandardowa";
+	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+@{
+	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");
+}
+
+<div class="container mb-5 center-main">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="col">
+				<h3>Stwórz nowe lobby</h3>
+			</div>
+			<div class="col">
+				<h3>Dołącz do lobby</h3>
+			</div>
+		</div>
+	</main>
+</div>
+
+@section Scripts {
+	<script>
+	</script>
+	<script src="~/js/common.js"></script>
+}

@@ -1,0 +1,21 @@
+﻿using MongoDB.Bson.Serialization.Attributes;
+using QuickQuiz.Dto;
+using System;
+using System.Collections.Generic;
+using System.Net.WebSockets;
+
+namespace QuickQuiz.Game
+{
+	public class GamePlayerBase : GamePlayerDTO
+	{
+		public string Username { get; set; }
+		public string CustomColor { get; set; }
+		public string CategoryVoteId { get; set; }
+		public int AnswerIndex { get; set; }
+		public long AnswerTime { get; set; }
+		public long TimeoutTime { get; set; }
+		public List<Tuple<bool, long>> AnswersData = new List<Tuple<bool, long>>();
+		public List<Tuple<string, string, string>> ConnectionsInfo = new List<Tuple<string, string, string>>();
+		public WebSocket AssignedSocket { get; set; }
+	}
+}

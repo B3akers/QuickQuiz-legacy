@@ -1,0 +1,77 @@
+﻿@{
+	var account = Context.Items["userAccount"] as QuickQuiz.Dto.AccountDTO;
+	var controllerName = ViewContext.RouteData.Values["controller"].ToString();
+	bool isAdminController = controllerName == "Admin";
+	bool isModeratorController = controllerName == "Moderator";
+}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	<div class="container-fluid">
+		@if (isAdminController)
+		{
+			<a class="navbar-brand" href="@Url.Action("Index","Admin")">QuickQuiz</a>
+		}
+		else
+		{
+			<a class="navbar-brand" href="@Url.Action("Index","Home")">QuickQuiz</a>
+		}
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+			@if (isAdminController)
+			{
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<a class="nav-link" href="@Url.Action("Accounts", "Admin")">Użytkownicy</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="@Url.Action("Categories", "Admin")">Kategorie</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="@Url.Action("Questions", "Admin")">Pytania</a>
+					</li>
+				</ul>
+			}
+			else if (isModeratorController)
+			{
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<a class="nav-link" href="@Url.Action("Reports", "Moderator")">Zgłoszenia</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="@Url.Action("Questions", "Moderator")">Nowe pytania</a>
+					</li>
+				</ul>
+			}
+			else
+			{
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<a class="nav-link" href="@Url.Action("CustomGame", "Lobby")">Gra niestandardowa</a>
+					</li>
+				</ul>
+			}
+
+			<div class="h5 navbar-nav ms-auto mb-2 mb-lg-0 d-flex nav-item dropdown">
+				<a class="text-light nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+					@account.Username
+				</a>
+				<ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDropdown">
+					<li><a class="dropdown-item" href="@Url.Action("Profile", "Home", new { profileId = account.Id })">Profil</a></li>
+					<li><a class="dropdown-item" href="@Url.Action("UserSettings", "Home")">Ustawienia</a></li>
+					@if (account.IsAdmin)
+					{
+						<li><a class="dropdown-item" href="@Url.Action("Index", "Admin")">Panel admina</a></li>
+					}
+					@if (account.IsAdmin || account.IsModerator)
+					{
+						<li><a class="dropdown-item" href="@Url.Action("Index", "Moderator")">Panel moderatora</a></li>
+					}
+					<li><a class="dropdown-item" href="@Url.Action("Logout", "Home")">Wyloguj się</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</nav>

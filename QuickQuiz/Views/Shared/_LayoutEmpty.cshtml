@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - QuickQuiz</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" integrity="sha512-6S2HWzVFxruDlZxI3sXOZZ4/eJ8AcxkQH1+JjSe/ONCEqR9L4Ysq5JdT5ipqtzU7WHalNwzwBv+iE51gNHJNqQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	@await RenderSectionAsync("Stylesheets", required: false)
+</head>
+<body>
+
+	@RenderBody()
+
+	<footer class="bg-dark text-center fixed-bottom text-white">
+		<div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+			Source code:
+			<a class="text-white" href="https://github.com/B3akers/QuickQuiz">QuickQuiz.ovh</a>
+		</div>
+	</footer>
+
+	@Html.AntiForgeryToken()
+	<script>
+		const csrfToken = document.getElementsByName('csrfToken')[0].value;
+	</script>
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,45 @@
+﻿@{
+	ViewData["Title"] = "Strona główna";
+	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+@section Stylesheets {
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+}
+
+@model QuickQuiz.Models.HomeIndexModel
+
+@{
+	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");
+}
+
+<div class="container mb-5 center-main">
+	<main role="main" class="pb-3">
+		<div class="row">
+			@foreach (var category in Model.Categories)
+			{
+				<a class="category-selection text-decoration-none col-md-2" href="javascript:void(0);" role="button" data-category-id="@category.Id" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<div class="text-center">
+						<img src="@category.Icon" width="150" height="150">
+					</div>
+					<div class="text-white text-center rounded-pill p-2" style="background-color: @category.Color;">@category.Label</div>
+				</a>
+			}
+			<div class="dropdown-menu dropdown-menu-dark dropdown-menu-end w-auto" aria-labelledby="dropdownMenuButton">
+				<a class="dropdown-item" onclick="playSoloClick()" href="javascript:void(0);">Graj</a>
+				<a class="dropdown-item" onclick="addQuestionClick()" href="javascript:void(0);">Dodaj pytanie</a>
+			</div>
+		</div>
+	</main>
+</div>
+
+@section Scripts {
+	<script>
+		const createSoloGameUrl = '@Url.Action("SoloGame", "Game")';
+		const gameIndexUrl = '@Url.Action("Index", "Game")';
+		const addQuestionRequestUrl = '@Url.Action("AddQuestionRequest", "Api")';	
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+	<script src="~/js/common.js"></script>
+	<script src="~/js/home.js"></script>
+}

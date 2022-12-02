@@ -1,0 +1,114 @@
+﻿@{
+	ViewData["Title"] = "Panel admina - Pytania";
+	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+@model QuickQuiz.Models.AdminProfileModel
+
+@section Stylesheets {
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+}
+
+@{
+	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");
+}
+
+
+<div class="container mb-5">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="row m-3 p-3 border border-secondary border-3 rounded">
+				@if (Model.Account != null)
+				{
+					<h5 class="text-center">Profil użytkownika @Model.Account.Username</h5>
+					<div class="row">
+						<div class="col m-3 border border-secondary border-3 rounded">
+							<h5>Informacje</h5>
+							<form class="needs-validation p-2" id="userInfoForm" novalidate>
+								<div class="mb-1">
+									<label for="userName">Nazwa użytkownika</label>
+									<input type="text" class="form-control" id="userName" value="@Model.Account.Username" minlength="3" maxlength="25" pattern="^[a-zA-Z][a-zA-Z0-9_]*(?: [a-zA-Z0-9]+)?$">
+								</div>
+								<div class="mb-1">
+									<label>Data założenia: @(new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(Model.Account.CreationTime).ToShortDateString())</label>
+								</div>
+								<div class="mb-1">
+									<label for="userEmail">Email</label>
+									<input type="email" class="form-control" value="@Model.Account.Email" id="userEmail">
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" value="" id="emailConfirmed" @(Model.Account.EmailConfirmed ? "checked" : "")>
+									<label class="form-label" for="emailConfirmed">
+										Potwierdzony email
+									</label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" value="" id="streamerMode" @(Model.Account.StreamerMode ? "checked" : "")>
+									<label class="form-label" for="streamerMode">
+										Streamer mode
+									</label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" value="" id="privateProfile" @(Model.Account.ProfilPrivate ? "checked" : "")>
+									<label class="form-label" for="privateProfile">
+										Profil prywatny
+									</label>
+								</div>
+								<div class="mb-1">
+									<label for="customColor">Kolor</label>
+									<input type="color" class="form-control" value="@(string.IsNullOrEmpty(Model.Account.CustomColor) ? "" : Model.Account.CustomColor)" id="customColor">
+								</div>
+								<div class="mb-1">
+									<label for="userColor">Własny kolor</label>
+									<input type="color" class="form-control" value="@(string.IsNullOrEmpty(Model.Account.UserColor) ? "#e80d7b" : Model.Account.UserColor)" id="userColor">
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" value="" id="isAdmin" @(Model.Account.IsAdmin ? "checked" : "")>
+									<label class="form-label" for="isAdmin">
+										Admin
+									</label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" value="" id="isModerator" @(Model.Account.IsModerator ? "checked" : "")>
+									<label class="form-label" for="isModerator">
+										Moderator
+									</label>
+								</div>
+								<div class="mb-1">
+									<label for="reportWeight">Waga reportu</label>
+									<input type="number" class="form-control" value="@Model.Account.ReportWeight" id="reportWeight">
+								</div>
+								<div class="mb-1">
+									<label>Aktywne reporty: @Model.Account.ActiveReports</label>
+								</div>
+								<div class="mb-1">
+									<button type="submit" data-buttontype="userInfo" class="btn btn-primary mt-2">Zmień</button>
+								</div>
+							</form>
+						</div>
+						<div class="col m-3 border border-secondary border-3 rounded">
+							<h5>Akcje</h5>
+
+						</div>
+					</div>
+
+					<input type="hidden" value="@Model.Account.Id" id="userProfileId">
+				}
+				else
+				{
+					<h5 class="text-center">Błedne id użytkownika</h5>
+				}
+			</div>
+		</div>
+	</main>
+</div>
+
+@section Scripts {
+	<script>
+		const modifyUserProfileUrl = '@Url.Action("ModifyUserProfile", "Admin")';
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+	<script src="~/js/common.js"></script>
+	<script src="~/js/admin/common.js"></script>
+	<script src="~/js/admin/profile.js"></script>
+}

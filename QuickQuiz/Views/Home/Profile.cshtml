@@ -1,0 +1,36 @@
+﻿@{
+	ViewData["Title"] = "Profil użytkownika";
+	Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+@model QuickQuiz.Models.HomeProfileModel
+
+@{
+	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");
+}
+
+<div class="container mb-5 center-main">
+	<main role="main" class="pb-3">
+		<div class="row">
+			@if (!Model.AccountPrivate && !Model.AccountNotFound)
+			{
+				<h3>@Model.Account.Username</h3>
+				<h2>Work in progress...</h2>
+			}
+			else @if (Model.AccountPrivate)
+			{
+				<h2>Profil użytkownika jest prywatny!</h2>
+			}
+			else
+			{
+				<h2>Podane konto nie istnieje!</h2>
+			}
+		</div>
+	</main>
+</div>
+
+@section Scripts {
+	<script>
+	</script>
+	<script src="~/js/common.js"></script>
+}
