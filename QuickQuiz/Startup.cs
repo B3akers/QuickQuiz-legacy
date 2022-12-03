@@ -100,7 +100,7 @@ namespace QuickQuiz
 			{
 				endpoints.MapControllerRoute(
 					name: "default",
-					pattern: "{controller=GameOld}/{action=Index}");
+					pattern: "{controller=Login}/{action=Index}");
 			});
 		}
 	}

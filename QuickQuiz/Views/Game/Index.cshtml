@@ -7,13 +7,14 @@
 
 @section Stylesheets {
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+	<link rel="stylesheet" href="~/css/game.css">
 }
 
 @{
 	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");
 }
 
-<div class="container center-main center-nav">
+<div class="container center-main footer-padding center-nav">
 	<div class="container mb-5 page-container text-center d-none" id="prepareQuestionContainer">
 		<div class="row justify-content-center p-2">
 			<div class="prevent-select">

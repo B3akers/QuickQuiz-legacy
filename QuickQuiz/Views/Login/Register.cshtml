@@ -2,6 +2,10 @@
     ViewData["Title"] = "Zarejestruj się";
 }
 
+@section Stylesheets {
+    <link rel="stylesheet" href="~/css/game.css">
+}
+
 <div class="container page-container">
     <form class="needs-validation p-2" oninput='up2.setCustomValidity(up2.value != up.value ? "Passwords do not match." : "")' novalidate>
         <div class="mb-1">

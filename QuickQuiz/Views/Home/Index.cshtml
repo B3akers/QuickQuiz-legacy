@@ -13,12 +13,12 @@
 	await Html.RenderPartialAsync("~/Views/Shared/_NavBar.cshtml");
 }
 
-<div class="container mb-5 center-main">
+<div class="container mb-5 footer-padding">
 	<main role="main" class="pb-3">
 		<div class="row">
 			@foreach (var category in Model.Categories)
 			{
-				<a class="category-selection text-decoration-none col-md-2" href="javascript:void(0);" role="button" data-category-id="@category.Id" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<a class="category-selection text-decoration-none col col-md-2" href="javascript:void(0);" role="button" data-category-id="@category.Id" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<div class="text-center">
 						<img src="@category.Icon" width="150" height="150">
 					</div>

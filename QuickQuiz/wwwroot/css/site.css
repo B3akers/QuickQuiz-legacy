@@ -3,10 +3,6 @@
     color: white;
 }
 
-body, html {
-    height: calc(100%);
-}
-
 .category-selection {
     cursor: pointer;
     padding: 0.5rem;
@@ -68,7 +64,7 @@ body, html {
 }
 
 .center-nav {
-    height: calc(100% - 7rem);
+    height: calc(100% - 3.5rem);
     max-width: initial;
     overflow: auto;
 }
@@ -96,7 +92,11 @@ table .dataTable thead td {
     border-bottom: 1px solid white !important;
 }
 
-div.dataTables_filter input:hover {
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0 !important;
+}
+
+div .dataTables_filter input:hover {
     border-color: #576675;
 }
 
@@ -110,4 +110,8 @@ img:not([src]),
 img[src=""],
 img[src="null"] {
     display: none;
+}
+
+.footer-padding {
+    padding-top: 3.5rem;
 }
