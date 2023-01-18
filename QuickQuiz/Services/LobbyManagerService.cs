@@ -1,4 +1,5 @@
-﻿using QuickQuiz.Game;
+﻿using QuickQuiz.Dto;
+using QuickQuiz.Game;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
@@ -16,6 +17,11 @@ namespace QuickQuiz.Services
 			if (_activeLobbies.TryGetValue(lobbyId, out var lobby))
 				return lobby;
 
+			return null;
+		}
+
+		public LobbyBase CreateLobby(AccountDTO account)
+		{
 			return null;
 		}
 

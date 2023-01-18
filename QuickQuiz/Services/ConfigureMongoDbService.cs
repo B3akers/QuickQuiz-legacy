@@ -73,6 +73,7 @@ namespace QuickQuiz.Services
 
 			var question_requests = mongoDatabase.GetCollection<QuestionRequestDTO>("question_requests");
 			await question_requests.Indexes.CreateOneAsync(new CreateIndexModel<QuestionRequestDTO>(Builders<QuestionRequestDTO>.IndexKeys.Ascending(x => x.Result)));
+			await question_requests.Indexes.CreateOneAsync(new CreateIndexModel<QuestionRequestDTO>(Builders<QuestionRequestDTO>.IndexKeys.Ascending(x => x.Author)));
 
 			var games = mongoDatabase.GetCollection<GameDTO>("games");
 			await games.UpdateManyAsync(x => x.GameStatus == GameStatusDTO.Running, Builders<GameDTO>.Update.Set(x => x.GameStatus, GameStatusDTO.Aborted));

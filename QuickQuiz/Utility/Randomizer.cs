@@ -8,30 +8,14 @@ namespace QuickQuiz.Utility
 {
 	public static class Randomizer
 	{
-		[ThreadStatic]
-		private static Random _local;
-
-		private static Random GetInstance()
-		{
-			Random inst = _local;
-			if (inst == null)
-			{
-				byte[] buffer = RandomNumberGenerator.GetBytes(4);
-				_local = inst = new Random(
-					BitConverter.ToInt32(buffer, 0));
-			}
-
-			return inst;
-		}
-
 		public static int Next()
 		{
-			return GetInstance().Next();
-		}
+			return BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
+        }
 
 		public static int Next(int maxValue)
 		{
-			return GetInstance().Next(maxValue);
+			return RandomNumberGenerator.GetInt32(maxValue);
 		}
 
 		public static string RandomString(int length)

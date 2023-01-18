@@ -36,9 +36,9 @@ function modifyQuestion(create, questionId) {
             '<label>Treść</label>' +
             '<input type="text" name="label" class="name form-control" value="' + (create ? '' : escapeValue(question.text)) + '" required />' +
             '</div>' +
-            '<div class="form-group">' +
-            '<label>Obraz</label>' +
-            '<input type="text" name="image" class="name form-control" value="' + (create ? '' : escapeValue(question.image)) + '" />' +
+            '<div class="mb-3">' +
+            '<label for="formFile" class="form-label">Obraz</label>' +
+            '<input class="form-control" accept="image/jpeg, image/png" type="file" name="image">' +
             '</div>' +
             '<div class="form-group">' +
             '<label>Autor (ID)</label>' +
@@ -81,11 +81,11 @@ function modifyQuestion(create, questionId) {
         buttons: {
             formSubmit: {
                 text: create ? 'Dodaj' : 'Modyfikuj',
-                action: function () {
+                action: async function () {
                     const content = this.$content[0];
 
                     const label = content.querySelector('input[name="label"]').value.trim();
-                    const image = content.querySelector('input[name="image"]').value.trim();
+                    const image = content.querySelector('input[name="image"]').files[0];
                     const author = content.querySelector('input[name="author"]').value.trim();
                     const correctAnswer = content.querySelector('select[name="correctAnswer"]').value.trim();
                     const answer0 = content.querySelector('input[name="answer0"]').value.trim();
@@ -101,11 +101,13 @@ function modifyQuestion(create, questionId) {
                         return false;
                     }
 
-
-                    const data = { label: label, image: image, author: author, correctAnswer: parseInt(correctAnswer), answer0: answer0, answer1: answer1, answer2: answer2, answer3: answer3, selectedCategories: selectedCategories };
+                    const data = { label: label, author: author, correctAnswer: parseInt(correctAnswer), answer0: answer0, answer1: answer1, answer2: answer2, answer3: answer3, selectedCategories: selectedCategories };
                     if (!create) {
                         data.id = content.querySelector('input[name="id"]').value.trim();
                     }
+
+                    if (image)
+                        data.imageBase64 = await toBase64(image);
 
                     makePostRequest(create ? addQuestionUrl : editQuestionUrl, data)
                         .then(data => {

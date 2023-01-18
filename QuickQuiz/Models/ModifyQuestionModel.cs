@@ -13,8 +13,7 @@ namespace QuickQuiz.Models
 		[MaxLength(350)]
 		public string Label { get; set; }
 
-		[MaxLength(80)]
-		public string Image { get; set; }
+		public string ImageBase64 { get; set; }
 
 		[RegularExpression("^[a-f\\d]{24}$")]
 		public string Author { get; set; }

@@ -11,11 +11,13 @@ namespace QuickQuiz.ActionFilters
 	{
 		private readonly IUserAuthentication _userAuthentication;
 		private readonly GameManagerService _gameManagerService;
+		private readonly LobbyManagerService _lobbyManagerService;
 
-		public LobbyActionFilter(IUserAuthentication userAuthentication, GameManagerService gameManagerService)
+		public LobbyActionFilter(IUserAuthentication userAuthentication, GameManagerService gameManagerService, LobbyManagerService lobbyManagerService)
 		{
 			_userAuthentication = userAuthentication;
 			_gameManagerService = gameManagerService;
+			_lobbyManagerService = lobbyManagerService;
 		}
 
 		public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -46,6 +48,19 @@ namespace QuickQuiz.ActionFilters
 			{
 				context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Game", action = "Index" })) { Permanent = false };
 				return;
+			}
+
+			var action = (string)context.HttpContext.GetRouteValue("action");
+			var activeLobby = _lobbyManagerService.GetLobby(account.LastLobbyId);
+			if (activeLobby != null)
+			{
+				if (action != "Index" || action != "Leave")
+				{
+					context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Lobby", action = "Index" })) { Permanent = false };
+					return;
+				}
+
+				context.HttpContext.Items["userLobby"] = activeLobby;
 			}
 
 			await next();

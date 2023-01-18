@@ -71,6 +71,9 @@ namespace QuickQuiz.Controllers
 
 			model.Account = visitorAccount;
 
+			if (visitorAccount.Id == account.Id || account.IsAdmin || account.IsModerator)
+				model.QuestionRequests = await (await _databaseService.GetQuestionRequestsCollection().FindAsync(x => x.Author == visitorAccount.Id, new FindOptions<QuestionRequestDTO>() { Limit = 10, Sort = Builders<QuestionRequestDTO>.Sort.Descending(x => x.Id) })).ToListAsync();
+
 			return View(model);
 		}
 

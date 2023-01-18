@@ -21,7 +21,17 @@ namespace QuickQuiz.Services
 			_configuration = configuration;
 		}
 
-		public async Task<string> UploadFileAsync(string urlFilePath)
+        public Task DeleteFile(string cdnPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> UploadBase64(string base64)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> UploadFileAsync(string urlFilePath)
 		{
 			var fileName = urlFilePath.Substring(urlFilePath.LastIndexOf('/') + 1);
 			var filePath = Path.Combine("wwwroot", "uploads", fileName);

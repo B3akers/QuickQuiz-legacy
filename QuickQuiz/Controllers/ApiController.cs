@@ -41,7 +41,7 @@ namespace QuickQuiz.Controllers
 
 			var account = HttpContext.Items["userAccount"] as AccountDTO;
 			if (account.ReportWeight < -10 || account.ActiveReports >= 20) //TODO make some settings for that?
-				return Json(new { error = "invalid_model" });
+				return Json(new { error = "not_allowed" });
 
 			var game = _gameManagerService.GetActiveGame(account.LastGameId);
 			if (game == null)
@@ -78,7 +78,7 @@ namespace QuickQuiz.Controllers
 			var account = HttpContext.Items["userAccount"] as AccountDTO;
 
 			if (account.ReportWeight < -15 || account.ActiveReports >= 20) //TODO settings?
-				return Json(new { error = "invalid_model" });
+				return Json(new { error = "not_allowed" });
 
 			if (!HttpContext.Request.Form.TryGetValue("text", out var text)
 				|| !HttpContext.Request.Form.TryGetValue("correctAnswer", out var correctAnswerStr)
@@ -90,7 +90,7 @@ namespace QuickQuiz.Controllers
 				|| !int.TryParse(correctAnswerStr, out var correctAnswer))
 				return Json(new { error = "invalid_model" });
 
-			var questionModel = new ModifyQuestionModel() { Answer0 = answer0.ToString().Trim(), Answer1 = answer1.ToString().Trim(), Answer2 = answer2.ToString().Trim(), Answer3 = answer3.ToString().Trim(), Label = text.ToString().Trim(), CorrectAnswer = correctAnswer, SelectedCategories = selectedCategories.ToString().Split(',').ToList(), Image = null, Author = account.Id };
+			var questionModel = new ModifyQuestionModel() { Answer0 = answer0.ToString().Trim(), Answer1 = answer1.ToString().Trim(), Answer2 = answer2.ToString().Trim(), Answer3 = answer3.ToString().Trim(), Label = text.ToString().Trim(), CorrectAnswer = correctAnswer, SelectedCategories = selectedCategories.ToString().Split(',').ToList(), Author = account.Id };
 
 			if (!TryValidateModel(questionModel))
 				return Json(new { error = "invalid_model" });
@@ -141,10 +141,8 @@ namespace QuickQuiz.Controllers
 				imagePath = $"/uploads/{randomName + ext}";
 			}
 
-			questionModel.Image = imagePath;
-
 			var requests = _databaseService.GetQuestionRequestsCollection();
-			var request = new QuestionRequestDTO() { CreationTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(), Author = account.Id, Image = questionModel.Image, Prority = account.ReportWeight, Answers = new List<string>() { questionModel.Answer0, questionModel.Answer1, questionModel.Answer2, questionModel.Answer3 }, CorrectAnswer = questionModel.CorrectAnswer, Result = QuestionRequestResult.None, Text = questionModel.Label, Categories = questionModel.SelectedCategories };
+			var request = new QuestionRequestDTO() { CreationTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(), Author = account.Id, Image = imagePath, Prority = account.ReportWeight, Answers = new List<string>() { questionModel.Answer0, questionModel.Answer1, questionModel.Answer2, questionModel.Answer3 }, CorrectAnswer = questionModel.CorrectAnswer, Result = QuestionRequestResult.None, Text = questionModel.Label, Categories = questionModel.SelectedCategories };
 			await requests.InsertOneAsync(request);
 
 			var accounts = _databaseService.GetAccountsCollection();

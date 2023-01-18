@@ -39,6 +39,10 @@ function acceptReport(element, reportId) {
             '<label>Treść</label>' +
             '<input type="text" name="label" class="name form-control" value="' + escapeValue(question.text) + '" required />' +
             '</div>' +
+            '<div class="mb-3">' +
+            '<label for="formFile" class="form-label">Obraz</label>' +
+            '<input class="form-control" accept="image/jpeg, image/png" type="file" name="image">' +
+            '</div>' +
             '<div class="form-group">' +
             '<label>Prawidłowa odpowiedź</label>' +
             '<select class="form-select" name="correctAnswer">' +
@@ -76,10 +80,11 @@ function acceptReport(element, reportId) {
         buttons: {
             formSubmit: {
                 text: 'Zaakceptuj',
-                action: function () {
+                action: async function () {
                     const content = this.$content[0];
 
                     const label = content.querySelector('input[name="label"]').value.trim();
+                    const image = content.querySelector('input[name="image"]').files[0];
                     const correctAnswer = content.querySelector('select[name="correctAnswer"]').value.trim();
                     const answer0 = content.querySelector('input[name="answer0"]').value.trim();
                     const answer1 = content.querySelector('input[name="answer1"]').value.trim();
@@ -96,6 +101,9 @@ function acceptReport(element, reportId) {
 
                     const data = { label: label, correctAnswer: parseInt(correctAnswer), answer0: answer0, answer1: answer1, answer2: answer2, answer3: answer3, selectedCategories: selectedCategories };
                     data.id = content.querySelector('input[name="id"]').value.trim();
+
+                    if (image)
+                        data.imageBase64 = await toBase64(image);
 
                     makePostRequest(acceptReportUrl, data)
                         .then(data => {

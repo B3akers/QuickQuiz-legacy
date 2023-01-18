@@ -112,6 +112,8 @@ function translateCode(code) {
             return 'Twoje pytanie zostało dodane, zanim ukaże się społeczności zostanie sprawdzone przez moderatorów';
         case 'user_modified':
             return 'Pomyślnie zapisano nowe wartości dla użytkownika!';
+        case 'not_allowed':
+            return 'Nie masz uprawnień do wykonania tej czyności!';
     }
 
     return code;

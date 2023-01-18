@@ -29,9 +29,6 @@
 					<li class="nav-item">
 						<a class="nav-link" href="@Url.Action("Categories", "Admin")">Kategorie</a>
 					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="@Url.Action("Questions", "Admin")">Pytania</a>
-					</li>
 				</ul>
 			}
 			else if (isModeratorController)
@@ -41,7 +38,10 @@
 						<a class="nav-link" href="@Url.Action("Reports", "Moderator")">Zgłoszenia</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="@Url.Action("Questions", "Moderator")">Nowe pytania</a>
+						<a class="nav-link" href="@Url.Action("QuestionsRequests", "Moderator")">Nowe pytania</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="@Url.Action("Questions", "Moderator")">Pytania</a>
 					</li>
 				</ul>
 			}

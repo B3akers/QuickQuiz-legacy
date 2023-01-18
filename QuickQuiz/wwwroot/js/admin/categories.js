@@ -89,15 +89,10 @@ function modifyCategory(create, categoryId) {
             '<label>Kolor</label>' +
             '<input type="color" name="color" class="name form-control" value="' + (create ? '' : category.color) + '" required />' +
             '</div>' +
-            (create ?
-                ('<div class="mb-3">' +
-                    '<label for="formFile" class="form-label">Logotyp</label>' +
-                    '<input class="form-control" accept="image/jpeg, image/png" type="file" name="icon">' +
-                    '</div>')
-                : ('<div class="form-group">' +
-                    '<label>Logotyp</label>' +
-                    '<input type="text" name="icon" class="name form-control" value="' + escapeValue(category.icon) + '" required />' +
-                    '</div>')) +
+            '<div class="mb-3">' +
+            '<label for="formFile" class="form-label">Logotyp</label>' +
+            '<input class="form-control" accept="image/jpeg, image/png" type="file" name="icon">' +
+            '</div>' +
 
             (create ? '' : `<input type="hidden" name="id" value="${categoryId}" />`) +
             '</form>',
@@ -110,21 +105,20 @@ function modifyCategory(create, categoryId) {
 
                     const label = content.querySelector('input[name="label"]').value.trim();
                     const color = content.querySelector('input[name="color"]').value.trim();
-                    const icon = create ? content.querySelector('input[name="icon"]').files[0] : content.querySelector('input[name="icon"]').value.trim();
+                    const icon = content.querySelector('input[name="icon"]').files[0];
 
-                    if (!label || !color || !icon) {
+                    if (!label || !color || (!icon && create)) {
                         toastr.error(translateCode('invalid_model'));
                         return false;
                     }
 
                     const data = { label: label, color: color };
-                    if (!create) {
-                        data.icon = icon;
+                    if (!create) 
                         data.id = content.querySelector('input[name="id"]').value.trim();
-                    } else {
-                        data.iconBase64 = await toBase64(icon);
-                    }
 
+                    if (icon)
+                        data.iconBase64 = await toBase64(icon);
+                    
                     makePostRequest(create ? addCategoryUrl : editCategoryUrl, data)
                         .then(data => {
                             if (data.error) {
